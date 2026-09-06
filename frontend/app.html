@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>İzin Takip Sistemi</title>
+  <meta name="description" content="Kurumsal İzin Takip ve Onay Sistemi" />
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/premium.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230f1f3d'/><path d='M8 10h16M8 16h10M8 22h13' stroke='%23d4a017' stroke-width='2.5' stroke-linecap='round'/></svg>" />
+  <script>
+  /* Oturum kontrolü: token + user bilgisi yoksa login sayfasına yönlendir */
+  (function() {
+    // Eski session key'lerini temizle (migration)
+    try {
+      localStorage.removeItem('izt_session');
+      localStorage.removeItem('izt_session_persistent');
+      sessionStorage.removeItem('izt_session');
+    } catch(e) {}
+
+    // Yeni auth sistemi kontrolü
+    const token = sessionStorage.getItem('izt_token') || localStorage.getItem('izt_token');
+    const userRaw = sessionStorage.getItem('izt_user') || localStorage.getItem('izt_user');
+    if (!token || !userRaw) {
+      window.location.href = 'index.html';
+    }
+  })();
+  </script>
+</head>
+<body>
+
+<div id="app-shell">
+  <!-- ── Sidebar ────────────────────────────────────────────── -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+      </div>
+      <div class="sidebar-logo-text">
+        <span class="sidebar-logo-title">İZİN TAKİP</span>
+        <span class="sidebar-logo-sub">Yönetim Sistemi</span>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav" id="sidebarNav">
+      <span class="nav-section-label">Ana Menü</span>
+
+      <div class="nav-item active hide-superadmin" data-view="dashboard" id="nav-dashboard" onclick="Router.navigate('dashboard')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+          <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+        </svg>
+        Dashboard
+      </div>
+
+      <div class="nav-item hide-superadmin" data-view="calendar" id="nav-calendar" onclick="Router.navigate('calendar')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        Takvim
+      </div>
+
+      <div class="nav-item hide-superadmin" data-view="history" id="nav-history" onclick="Router.navigate('history')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+        </svg>
+        İzin Geçmişi
+      </div>
+
+      <!-- Admin Only -->
+      <div class="nav-item admin-only hide-superadmin" data-view="approvals" id="nav-approvals" onclick="Router.navigate('approvals')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+        </svg>
+        İzin Onayları
+        <span class="nav-badge" id="pendingBadge" style="display:none">0</span>
+      </div>
+
+      <div class="nav-item admin-only hide-superadmin" data-view="reports" id="nav-reports" onclick="Router.navigate('reports')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
+          <line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/>
+        </svg>
+        Raporlama
+      </div>
+
+      <!-- SuperAdmin Only: Tüm Şirketler -->
+      <div class="nav-item superadmin-only" data-view="companies" id="nav-companies" style="display:none" onclick="Router.navigate('companies')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 21h18M3 7v14M21 7v14M6 7V3h12v4M9 11h2M9 15h2M13 11h2M13 15h2"/>
+        </svg>
+        Tüm Şirketler
+      </div>
+
+      <span class="nav-section-label">Sistem</span>
+
+      <div class="nav-item" data-view="settings" id="nav-settings" onclick="Router.navigate('settings')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.07 4.93A10 10 0 0112 2a10 10 0 01-7.07 2.93A10 10 0 002 12a10 10 0 002.93 7.07A10 10 0 0012 22a10 10 0 007.07-2.93A10 10 0 0022 12a10 10 0 00-2.93-7.07z"/>
+        </svg>
+        Ayarlar
+      </div>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar" id="sidebarAvatarText">A</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name" id="sidebarUserName">Kullanıcı</div>
+          <div class="sidebar-user-role" id="sidebarUserRole">Yükleniyor...</div>
+        </div>
+        <div class="sidebar-logout" id="logoutBtn" title="Çıkış Yap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+            <polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Main Area ─────────────────────────────────────────── -->
+  <div class="main-area">
+
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-left">
+        <div class="header-title" id="headerTitle">Dashboard</div>
+        <div class="header-subtitle" id="headerSubtitle">Hoş geldiniz</div>
+      </div>
+      <div class="header-right">
+        <div class="header-date">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          <span id="headerDate"></span>
+        </div>
+        <button class="btn btn-accent btn-sm hide-superadmin" id="newLeaveBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Yeni İzin
+        </button>
+      </div>
+    </header>
+
+    <!-- Content -->
+    <main class="content-area">
+
+      <!-- ── Dashboard View ──────────────────────────────── -->
+      <section class="view active" id="view-dashboard">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title" id="dashGreeting">Merhaba</h1>
+            <p class="page-subtitle" id="dashSubtitle">İzin durumunuza genel bakış</p>
+          </div>
+          <button class="btn btn-primary" id="dashNewLeaveBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            İzin Talebi Oluştur
+          </button>
+        </div>
+
+        <!-- Staff Stats -->
+        <div id="staffStatsSection">
+          <div class="stats-grid" id="balanceCards"></div>
+        </div>
+
+        <!-- Admin Stats -->
+        <div id="adminStatsSection" style="display:none">
+          <div class="stats-grid" id="adminCards"></div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title">
+              Son İzin Talepleri
+              <a href="#" class="btn btn-ghost btn-sm" id="dashSeeAllBtn">Tümünü Gör</a>
+            </div>
+            <div id="recentLeaves"></div>
+          </div>
+
+          <div class="card" id="adminPendingCard">
+            <div class="card-title" id="dashRightCardTitle">Bekleyen Onaylar</div>
+            <div id="pendingLeavesList"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Calendar View ───────────────────────────────── -->
+      <section class="view" id="view-calendar">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Takvim</h1>
+            <p class="page-subtitle">İzinleri takvim üzerinde görüntüleyin</p>
+          </div>
+        </div>
+        <div class="calendar-wrap">
+          <div class="calendar-header">
+            <div class="calendar-nav">
+              <button class="cal-nav-btn" id="calPrev">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="15 18 9 12 15 6"/>
+                </svg>
+              </button>
+              <span class="calendar-month" id="calMonthLabel"></span>
+              <button class="cal-nav-btn" id="calNext">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              </button>
+            </div>
+            <button class="btn btn-outline btn-sm calendar-today-btn" id="calToday">Bugün</button>
+          </div>
+          <div class="calendar-grid" id="calendarGrid"></div>
+          <div class="cal-legend">
+            <span class="cal-legend-item"><span class="cal-legend-dot pending"></span>Bekliyor</span>
+            <span class="cal-legend-item"><span class="cal-legend-dot approved"></span>Onaylandı</span>
+            <span class="cal-legend-item"><span class="cal-legend-dot rejected"></span>Reddedildi</span>
+            <span class="cal-legend-item"><span class="cal-legend-dot cancelled"></span>İptal</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── History View ────────────────────────────────── -->
+      <section class="view" id="view-history">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">İzin Geçmişi</h1>
+            <p class="page-subtitle" id="historySubtitle">Kişisel izin kayıtlarınız</p>
+          </div>
+          <button class="btn btn-success btn-sm" id="historyExcelBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px">
+              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/>
+              <line x1="16" y1="17" x2="8" y2="17"/>
+            </svg>
+            Excel İndir (.xlsx)
+          </button>
+        </div>
+
+        <div class="card" style="padding:0">
+          <div style="padding:20px 20px 0">
+            <div class="filter-bar">
+              <div class="filter-search">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                <input class="field-input" type="text" id="historySearch" placeholder="Ara..." />
+              </div>
+              <select class="field-select" id="historyStatusFilter" style="max-width:160px">
+                <option value="">Tüm Durumlar</option>
+                <option value="pending">Bekliyor</option>
+                <option value="approved">Onaylandı</option>
+                <option value="rejected">Reddedildi</option>
+                <option value="cancelled">İptal Edildi</option>
+              </select>
+              <select class="field-select" id="historyTypeFilter" style="max-width:180px">
+                <option value="">Tüm Türler</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-wrap" style="border:none;border-radius:0">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>İzin Türü</th>
+                  <th>Başlangıç</th>
+                  <th>Bitiş</th>
+                  <th>Süre</th>
+                  <th>Açıklama</th>
+                  <th>Durum</th>
+                  <th>Oluşturulma</th>
+                  <th>İşlem</th>
+                </tr>
+              </thead>
+              <tbody id="historyTableBody"></tbody>
+            </table>
+          </div>
+          <div class="pagination" id="historyPagination"></div>
+        </div>
+      </section>
+
+      <!-- ── Approvals View (Admin) ──────────────────────── -->
+      <section class="view" id="view-approvals">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">İzin Onayları</h1>
+            <p class="page-subtitle">Bekleyen izin taleplerini inceleyin ve onaylayın</p>
+          </div>
+        </div>
+
+        <div class="tabs" style="max-width:400px">
+          <button class="tab-btn active" data-apptab="pending">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Bekleyenler <span id="appPendingCount" class="nav-badge" style="position:static;background:var(--warning);color:#fff">0</span>
+          </button>
+          <button class="tab-btn" data-apptab="all">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            Tüm İstekler
+          </button>
+        </div>
+
+        <div id="approvalsContent"></div>
+      </section>
+
+      <!-- ── Reports View (Admin) ───────────────────────── -->
+      <section class="view" id="view-reports">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Raporlama</h1>
+            <p class="page-subtitle">İzin verilerini filtreleyin ve Excel'e aktarın</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title">Filtreler</div>
+          <div class="report-filters">
+            <div>
+              <label class="field-label">Personel</label>
+              <select class="field-select" id="rptUser"><option value="">Tümü</option></select>
+            </div>
+            <div>
+              <label class="field-label">Başlangıç Tarihi</label>
+              <input class="field-input" type="date" id="rptStartDate" />
+            </div>
+            <div>
+              <label class="field-label">Bitiş Tarihi</label>
+              <input class="field-input" type="date" id="rptEndDate" />
+            </div>
+            <div>
+              <label class="field-label">İzin Türü</label>
+              <select class="field-select" id="rptType"><option value="">Tümü</option></select>
+            </div>
+            <div>
+              <label class="field-label">Durum</label>
+              <select class="field-select" id="rptStatus">
+                <option value="">Tümü</option>
+                <option value="pending">Bekliyor</option>
+                <option value="approved">Onaylandı</option>
+                <option value="rejected">Reddedildi</option>
+                <option value="cancelled">İptal Edildi</option>
+              </select>
+            </div>
+            <div style="display:flex;gap:8px;align-items:flex-end">
+              <button class="btn btn-primary" id="rptFilterBtn" style="flex:1">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+                </svg>
+                Filtrele
+              </button>
+              <button class="btn btn-outline" id="rptResetBtn" title="Filtreleri Sıfırla">
+                Sıfırla
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:16px;padding:0">
+          <div style="padding:16px 20px;border-bottom:1px solid var(--border-light);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+            <span class="card-title" style="margin:0">Filtrelenen Sonuçlar — <span id="rptCount" style="color:var(--primary);font-weight:700">0</span> kayıt</span>
+            <button class="btn btn-success btn-sm" id="exportExcelBtn2">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px">
+                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/>
+                <line x1="16" y1="17" x2="8" y2="17"/>
+              </svg>
+              Excel Belgesi Oluştur (.xlsx)
+            </button>
+          </div>
+          <div class="table-wrap" style="border:none;border-radius:0">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Personel</th>
+                  <th>İzin Türü</th>
+                  <th>Başlangıç</th>
+                  <th>Bitiş</th>
+                  <th>Süre</th>
+                  <th>Açıklama</th>
+                  <th>Durum</th>
+                  <th>Onaylayan</th>
+                  <th>Oluşturulma</th>
+                </tr>
+              </thead>
+              <tbody id="reportTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Settings View ───────────────────────────────── -->
+      <section class="view" id="view-settings">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Ayarlar</h1>
+            <p class="page-subtitle">Sistem ve profil ayarları</p>
+          </div>
+        </div>
+        <div id="settingsContent"></div>
+      </section>
+
+      <!-- ── All Companies View (SuperAdmin Only) ─────────── -->
+      <section class="view" id="view-companies">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Tüm Şirketler</h1>
+            <p class="page-subtitle">Sistemde kayıtlı kurumlar, yöneticiler ve personel durumları</p>
+          </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid" id="companiesStatsGrid">
+          <div class="stat-card">
+            <div class="stat-icon" style="background:rgba(26,58,107,.1);color:#1a3a6b">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M3 7v14M21 7v14M6 7V3h12v4M9 11h2M9 15h2M13 11h2M13 15h2"/></svg>
+            </div>
+            <div class="stat-value" id="statTotalCompanies">0</div>
+            <div class="stat-label">Toplam Kayıtlı Şirket</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background:rgba(31,170,107,.1);color:#1faa6b">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+            </div>
+            <div class="stat-value" id="statTotalStaff">0</div>
+            <div class="stat-label">Toplam Personel</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background:rgba(212,160,23,.1);color:#d4a017">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            </div>
+            <div class="stat-value" id="statTotalLeaves">0</div>
+            <div class="stat-label">Toplam İzin Talebi</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon" style="background:rgba(231,76,60,.1);color:#e74c3c">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div class="stat-value" id="statPendingLeaves">0</div>
+            <div class="stat-label">Bekleyen İzin</div>
+          </div>
+        </div>
+
+        <!-- Filter / Search & Excel Export -->
+        <div class="card" style="margin-bottom:20px;padding:16px 20px">
+          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:space-between">
+            <input class="field-input" type="text" id="companySearchInput" placeholder="Şirket adı veya yönetici ara..." style="flex:1;min-width:240px;max-width:400px" />
+            <button class="btn btn-success" id="companiesExcelBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:16px;height:16px">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              Excel Olarak İndir
+            </button>
+          </div>
+        </div>
+
+        <!-- Companies Table -->
+        <div class="card">
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Kurum Adı</th>
+                  <th>Kurum Yöneticisi</th>
+                  <th>Yönetici E-posta</th>
+                  <th>Personel Sayısı</th>
+                  <th>Toplam İzin</th>
+                  <th>Kayıt Tarihi</th>
+                  <th style="text-align:right">İşlemler</th>
+                </tr>
+              </thead>
+              <tbody id="companiesTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</div>
+
+<!-- ── Toast Container ──────────────────────────────────── -->
+<div id="toast-container"></div>
+
+<!-- ── Leave Form Modal ──────────────────────────────────── -->
+<div class="modal-overlay" id="leaveModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        İzin Talebi Oluştur
+      </div>
+      <button class="modal-close" id="leaveModalClose">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="daily" id="tabDaily">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+          Günlük İzin
+        </button>
+        <button class="tab-btn" data-tab="hourly" id="tabHourly">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+          Saatlik İzin
+        </button>
+      </div>
+
+      <!-- Daily Tab -->
+      <div class="tab-content active" id="tabContentDaily">
+        <div class="field-row">
+          <div class="field">
+            <label class="field-label required">Başlangıç Tarihi</label>
+            <input class="field-input" type="date" id="dailyStart" />
+          </div>
+          <div class="field">
+            <label class="field-label required">Bitiş Tarihi</label>
+            <input class="field-input" type="date" id="dailyEnd" />
+          </div>
+        </div>
+        <div class="duration-display" id="dailyDurationDisplay" style="display:none">
+          <span class="duration-label">Hesaplanan Süre:</span>
+          <span class="duration-value" id="dailyDurationValue">—</span>
+        </div>
+      </div>
+
+      <!-- Hourly Tab -->
+      <div class="tab-content" id="tabContentHourly">
+        <div class="field">
+          <label class="field-label required">Tarih</label>
+          <input class="field-input" type="date" id="hourlyDate" />
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label class="field-label required">Başlangıç Saati</label>
+            <input class="field-input" type="time" id="hourlyStart" />
+          </div>
+          <div class="field">
+            <label class="field-label required">Bitiş Saati</label>
+            <input class="field-input" type="time" id="hourlyEnd" />
+          </div>
+        </div>
+        <div class="duration-display" id="hourlyDurationDisplay" style="display:none">
+          <span class="duration-label">Hesaplanan Süre:</span>
+          <span class="duration-value" id="hourlyDurationValue">—</span>
+        </div>
+      </div>
+
+      <!-- Common Fields -->
+      <div class="field">
+        <label class="field-label required">İzin Türü</label>
+        <select class="field-select" id="leaveTypeSelect"></select>
+      </div>
+      <div class="field">
+        <label class="field-label">Açıklama</label>
+        <textarea class="field-textarea" id="leaveDescription" placeholder="İzin açıklaması (opsiyonel)..."></textarea>
+      </div>
+
+      <div class="login-error" id="leaveFormError" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        <span id="leaveFormErrorMsg"></span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="leaveModalCancel">İptal</button>
+      <button class="btn btn-accent" id="leaveSubmitBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+        </svg>
+        Talebi Gönder
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Leave Detail Modal ────────────────────────────────── -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <div class="modal-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+        </svg>
+        İzin Detayı
+      </div>
+      <button class="modal-close" id="detailModalClose">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body" id="detailModalBody"></div>
+    <div class="modal-footer" id="detailModalFooter"></div>
+  </div>
+</div>
+
+<!-- ── Company Detail Modal (SuperAdmin) ─────────────────── -->
+<div class="modal-overlay" id="companyDetailModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="companyDetailTitle">Kurum Personel Listesi</div>
+      <button class="modal-close" onclick="closeModal('companyDetailModal')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="modal-body" id="companyDetailBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('companyDetailModal')">Kapat</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Rejection Modal ───────────────────────────────────── -->
+<div class="modal-overlay" id="rejectModal">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <div class="modal-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--danger)">
+          <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+        </svg>
+        İzni Reddet
+      </div>
+      <button class="modal-close" id="rejectModalClose">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:.85rem;color:var(--text-secondary);margin-bottom:16px">
+        Bu izin talebini reddetmek üzeresiniz. Lütfen bir red nedeni girin.
+      </p>
+      <div class="field">
+        <label class="field-label required">Red Nedeni</label>
+        <textarea class="field-textarea" id="rejectionReasonInput" placeholder="Red nedenini açıklayın..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="rejectModalCancel">İptal</button>
+      <button class="btn btn-danger" id="rejectConfirmBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+        </svg>
+        Reddet
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ── User Form Modal (Admin) ──────────────────────────── -->
+<div class="modal-overlay" id="userModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="userModalTitle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+        </svg>
+        Personel Ekle
+      </div>
+      <button class="modal-close" id="userModalClose">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="userModalId" />
+      <div class="field-row">
+        <div class="field">
+          <label class="field-label required">Ad Soyad</label>
+          <input class="field-input" type="text" id="userModalName" placeholder="Ahmet Yılmaz" />
+        </div>
+        <div class="field">
+          <label class="field-label required">Departman</label>
+          <input class="field-input" type="text" id="userModalDept" placeholder="Yazılım" />
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label class="field-label required">Kullanıcı Adı</label>
+          <input class="field-input" type="text" id="userModalUsername" placeholder="ahmet.yilmaz" />
+        </div>
+        <div class="field">
+          <label class="field-label required">E-posta</label>
+          <input class="field-input" type="email" id="userModalEmail" placeholder="ahmet@sirket.com" />
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label class="field-label" id="userModalPassLabel">Şifre</label>
+          <input class="field-input" type="password" id="userModalPassword" placeholder="En az 6 karakter" />
+        </div>
+        <div class="field">
+          <label class="field-label required">Rol</label>
+          <select class="field-select" id="userModalRole">
+            <option value="staff">Personel</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label class="field-label">Toplam İzin Hakkı (Gün)</label>
+          <input class="field-input" type="number" id="userModalLeaveTotal" placeholder="14" min="0" />
+        </div>
+        <div class="field">
+          <label class="field-label">Saatlik İzin Hakkı (Saat)</label>
+          <input class="field-input" type="number" id="userModalHourlyTotal" placeholder="16" min="0" />
+        </div>
+      </div>
+      <div class="field">
+        <label class="field-label">Telegram Chat ID (opsiyonel)</label>
+        <input class="field-input" type="text" id="userModalTelegram" placeholder="123456789" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="userModalCancel">İptal</button>
+      <button class="btn btn-primary" id="userModalSave">Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Leave Type Modal ──────────────────────────────────── -->
+<div class="modal-overlay" id="leaveTypeModal">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <div class="modal-title">İzin Türü</div>
+      <button class="modal-close" id="leaveTypeModalClose">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="leaveTypeModalId" />
+      <div class="field">
+        <label class="field-label required">İzin Türü Adı</label>
+        <input class="field-input" type="text" id="leaveTypeModalName" placeholder="Yıllık İzin" />
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" id="leaveTypeModalCancel">İptal</button>
+      <button class="btn btn-primary" id="leaveTypeModalSave">Kaydet</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Logout Confirm Overlay ──────────────────────────── -->
+<div class="modal-overlay" id="logoutOverlay">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <div class="modal-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Çıkış Yap
+      </div>
+    </div>
+    <div class="modal-body" style="text-align:center;padding:32px 26px">
+      <div style="width:64px;height:64px;border-radius:50%;background:var(--danger-light);display:flex;align-items:center;justify-content:center;margin:0 auto 16px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2" style="width:28px;height:28px"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </div>
+      <p style="font-size:.9rem;font-weight:600;color:var(--text-primary);margin-bottom:8px">Sistemden çıkmak istiyor musunuz?</p>
+      <p style="font-size:.8rem;color:var(--text-secondary)">Ana giriş sayfasına yönlendirileceksiniz.</p>
+    </div>
+    <div class="modal-footer" style="justify-content:center;gap:12px">
+      <button class="btn btn-outline" id="logoutCancelBtn">Vazgeç</button>
+      <button class="btn btn-danger" id="logoutConfirmBtn">Evet, Çıkış Yap</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Scripts ───────────────────────────────────────────── -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/data.js"></script>
+<script src="js/telegram.js"></script>
+<script src="js/router.js"></script>
+<script src="js/dashboard.js"></script>
+<script src="js/leave-form.js"></script>
+<script src="js/calendar.js"></script>
+<script src="js/history.js"></script>
+<script src="js/approvals.js"></script>
+<script src="js/reports.js"></script>
+<script src="js/settings.js"></script>
+<script src="js/companies-view.js"></script>
+<script src="js/app.js"></script>
+
+<script>
+/* ── Premium Micro-Interactions ──────────────────────────────── */
+
+// 1. Animated number counter for stat cards
+function animateCounter(el, target, duration = 800) {
+  const isFloat = target % 1 !== 0;
+  const start = performance.now();
+  const from = 0;
+  el.classList.add('counting');
+  setTimeout(() => el.classList.remove('counting'), 400);
+
+  function tick(now) {
+    const elapsed = now - start;
+    const progress = Math.min(elapsed / duration, 1);
+    // Ease out cubic
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = from + (target - from) * eased;
+    const suffix = el.dataset.suffix || '';
+    el.innerHTML = isFloat
+      ? current.toFixed(1) + suffix
+      : Math.round(current) + suffix;
+    if (progress < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+// Observe stat cards entering viewport
+function initStatAnimations() {
+  const statValues = document.querySelectorAll('.stat-value[data-val]');
+  if (!statValues.length) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const el = entry.target;
+        const val = parseFloat(el.dataset.val);
+        if (!isNaN(val)) {
+          animateCounter(el, val);
+        }
+        observer.unobserve(el);
+      }
+    });
+  }, { threshold: 0.3 });
+
+  statValues.forEach(el => observer.observe(el));
+}
+
+// 2. Staggered stat card entrance animation
+function animateStatCards() {
+  const cards = document.querySelectorAll('.stat-card');
+  cards.forEach((card, i) => {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(20px)';
+    card.style.transition = 'none';
+    setTimeout(() => {
+      card.style.transition = 'opacity .4s cubic-bezier(0,0,.2,1), transform .4s cubic-bezier(0.34,1.56,0.64,1)';
+      card.style.opacity = '1';
+      card.style.transform = 'translateY(0)';
+    }, 80 + i * 70);
+  });
+}
+
+// 3. Hook into router view changes
+const _origShowView = window.showView;
+if (typeof _origShowView === 'function') {
+  window.showView = function(viewId) {
+    _origShowView(viewId);
+    setTimeout(() => {
+      animateStatCards();
+      initStatAnimations();
+    }, 50);
+  };
+}
+
+// Observer kaldırıldı (Infinite loop'a sebep oluyordu)
+// 5. Sidebar nav item click — ripple effect
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', function(e) {
+    const ripple = document.createElement('span');
+    const rect = this.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    ripple.style.cssText = `
+      position: absolute;
+      width: ${size}px; height: ${size}px;
+      left: ${e.clientX - rect.left - size/2}px;
+      top: ${e.clientY - rect.top - size/2}px;
+      background: rgba(212,160,23,.15);
+      border-radius: 50%;
+      transform: scale(0);
+      animation: rippleAnim .5s ease-out forwards;
+      pointer-events: none;
+    `;
+    if (!document.querySelector('#ripple-style')) {
+      const s = document.createElement('style');
+      s.id = 'ripple-style';
+      s.textContent = '@keyframes rippleAnim { to { transform: scale(2.5); opacity: 0; } }';
+      document.head.appendChild(s);
+    }
+    this.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 600);
+  });
+});
+
+// 6. Initial run
+setTimeout(() => {
+  animateStatCards();
+  initStatAnimations();
+}, 300);
+</script>
+
+</body>
+</html>

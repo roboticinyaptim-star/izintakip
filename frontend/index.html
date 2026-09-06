@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>İzin Takip Sistemi — Hoş Geldiniz</title>
+  <meta name="description" content="Kurumsal İzin Takip ve Onay Sistemi — Güvenli giriş" />
+  <link rel="stylesheet" href="css/login.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230f1f3d'/><path d='M8 10h16M8 16h10M8 22h13' stroke='%23d4a017' stroke-width='2.5' stroke-linecap='round'/></svg>" />
+</head>
+<body>
+
+<div class="login-wrapper">
+
+  <!-- ═══════════════════════════════════════════════════════
+       LEFT — Slideshow (bilgisayar / ofis ortamı fotoğrafları)
+       ═══════════════════════════════════════════════════════ -->
+  <div class="slide-panel">
+
+    <!-- Brand -->
+    <div class="slide-brand">
+      <div class="slide-brand-icon">
+        <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+      </div>
+      <div>
+        <div class="slide-brand-name">İZİN TAKİP</div>
+        <div class="slide-brand-sub">Kurumsal Yönetim Sistemi</div>
+      </div>
+    </div>
+
+    <!-- Slide 1 -->
+    <div class="slide active" id="slide-0">
+      <img class="slide-img" src="img/slide1.jpg" alt="Kurumsal ofis — çalışanlar ve bilgisayarlar" />
+      <div class="slide-content">
+        <div class="slide-tag">İzin Yönetimi</div>
+        <h2 class="slide-title">İzin Süreçlerinizi<br>Dijitalleştirin</h2>
+        <p class="slide-desc">Personel izin taleplerini kolayca oluşturun, yöneticinizin onayını anında takip edin.</p>
+      </div>
+    </div>
+
+    <!-- Slide 2 -->
+    <div class="slide" id="slide-1">
+      <img class="slide-img" src="img/slide2.jpg" alt="Kurumsal toplantı odası" />
+      <div class="slide-content">
+        <div class="slide-tag">Takım Yönetimi</div>
+        <h2 class="slide-title">Tüm Ekibinizi<br>Tek Platformda</h2>
+        <p class="slide-desc">Her firma kendi personel ağını kurar ve yönetir. İzinler şeffaf, takip kolay.</p>
+      </div>
+    </div>
+
+    <!-- Slide 3 -->
+    <div class="slide" id="slide-2">
+      <img class="slide-img" src="img/slide3.jpg" alt="Modern kurumsal ofis ve çalışma alanı" />
+      <div class="slide-content">
+        <div class="slide-tag">Akıllı Süreçler</div>
+        <h2 class="slide-title">Hızlı Onay &amp;<br>Detaylı Takip</h2>
+        <p class="slide-desc">İzin taleplerini tek tıkla inceleyip onaylayın, departman takvimini ve geçmiş kayıtları anlık takip edin.</p>
+      </div>
+    </div>
+
+    <!-- Dot indicators -->
+    <div class="slide-dots">
+      <button class="slide-dot active" data-slide="0" aria-label="Slayt 1"></button>
+      <button class="slide-dot"        data-slide="1" aria-label="Slayt 2"></button>
+      <button class="slide-dot"        data-slide="2" aria-label="Slayt 3"></button>
+    </div>
+
+  </div><!-- /slide-panel -->
+
+  <!-- ═══════════════════════════════════════════════════════
+       RIGHT — Auth Panel (2 tabs)
+       ═══════════════════════════════════════════════════════ -->
+  <div class="auth-panel">
+
+    <!-- Mobile logo -->
+    <div class="auth-logo-mobile">
+      <div class="slide-brand-icon" style="width:40px;height:40px;border-radius:11px">
+        <svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:#fff"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+      </div>
+      <div>
+        <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:.95rem;font-weight:800;color:#0d1b2e">İZİN TAKİP</div>
+        <div style="font-size:.65rem;color:#8fa3bd">Kurumsal Yönetim Sistemi</div>
+      </div>
+    </div>
+
+    <div class="auth-panel-header">
+      <h1 class="auth-panel-title">Kurumsal Giriş</h1>
+      <p class="auth-panel-sub">Lütfen yetki alanınıza uygun oturum açma seçeneğini kullanınız.</p>
+    </div>
+
+    <!-- 2 Tabs -->
+    <div class="auth-tabs" role="tablist">
+      <button class="auth-tab-btn active" role="tab" data-tab="admin" id="tab-admin">Yönetici Girişi</button>
+      <button class="auth-tab-btn" role="tab" data-tab="staff" id="tab-staff">Personel Girişi</button>
+    </div>
+
+    <!-- ══ PANE: Yönetici ══════════════════════════════════ -->
+    <div class="auth-pane active" id="pane-admin">
+
+      <div class="alert-error" id="adminError">
+        <span id="adminErrorMsg"></span>
+      </div>
+
+      <div class="alert-success" id="adminSuccess"></div>
+
+      <form id="adminLoginForm" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="adminUsername">Kullanıcı Adı veya E-posta</label>
+          <input class="form-input" type="text" id="adminUsername"
+            placeholder="ornek@kurum.com" autocomplete="username" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="adminPassword">Şifre</label>
+          <div class="form-input-wrap">
+            <input class="form-input" type="password" id="adminPassword"
+              placeholder="Şifrenizi giriniz" autocomplete="current-password" />
+            <span class="input-icon" id="toggleAdminPwd" style="font-size:.72rem;font-weight:600;color:#6b7a99;user-select:none">Göster</span>
+          </div>
+        </div>
+
+        <label class="checkbox-label">
+          <input type="checkbox" id="adminRemember" /> Beni Hatırla
+        </label>
+
+        <button type="submit" class="btn-submit" id="adminLoginBtn">Giriş Yap</button>
+      </form>
+
+      <!-- Collapsible: Yeni Firma Kur -->
+      <div class="new-company-toggle" id="toggleRegister">
+        Yeni Kurum Kaydı Oluştur
+      </div>
+
+      <div class="register-collapse" id="registerCollapse">
+        <div class="register-inner">
+          <div class="auth-divider">Firma ve Yönetici Bilgileri</div>
+
+          <form id="registerForm" novalidate>
+            <div class="form-group">
+              <label class="form-label" for="regCompany">Firma Adı</label>
+              <input class="form-input" type="text" id="regCompany"
+                placeholder="Örnek: ABC Teknoloji A.Ş." autocomplete="organization" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="regUsername">Yönetici Kullanıcı Adı</label>
+              <input class="form-input" type="text" id="regUsername" placeholder="yonetici" />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="regEmail">Yönetici E-posta Adresi</label>
+              <input class="form-input" type="email" id="regEmail"
+                placeholder="admin@firma.com" autocomplete="email" />
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label" for="regPassword">Şifre</label>
+                <input class="form-input" type="password" id="regPassword"
+                  placeholder="En az 6 karakter" autocomplete="new-password" />
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="regPasswordConfirm">Şifre Tekrarı</label>
+                <input class="form-input" type="password" id="regPasswordConfirm"
+                  placeholder="Şifreyi doğrulayınız" autocomplete="new-password" />
+              </div>
+            </div>
+
+            <button type="submit" class="btn-submit btn-gold" id="registerBtn">
+              Kurum ve Yönetici Hesabını Kaydet
+            </button>
+          </form>
+        </div>
+      </div>
+
+    </div><!-- /pane-admin -->
+
+    <!-- ══ PANE: Personel ══════════════════════════════════ -->
+    <div class="auth-pane" id="pane-staff">
+
+      <div class="alert-error" id="staffError">
+        <span id="staffErrorMsg"></span>
+      </div>
+
+      <form id="staffLoginForm" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="staffEmail">E-posta Adresi</label>
+          <input class="form-input" type="email" id="staffEmail"
+            placeholder="personel@kurum.com" autocomplete="email" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="staffPassword">Şifre</label>
+          <div class="form-input-wrap">
+            <input class="form-input" type="password" id="staffPassword"
+              placeholder="Şifrenizi giriniz" autocomplete="current-password" />
+            <span class="input-icon" id="toggleStaffPwd" style="font-size:.72rem;font-weight:600;color:#6b7a99;user-select:none">Göster</span>
+          </div>
+        </div>
+
+        <label class="checkbox-label">
+          <input type="checkbox" id="staffRemember" /> Beni Hatırla
+        </label>
+
+        <button type="submit" class="btn-submit" id="staffLoginBtn">Giriş Yap</button>
+      </form>
+
+    </div><!-- /pane-staff -->
+
+  </div><!-- /auth-panel -->
+
+</div><!-- /login-wrapper -->
+
+<script src="js/data.js"></script>
+<script src="js/auth.js"></script>
+
+<script>
+/* ═══════════════════════════════════════════════════════════
+   LOGIN LOGIC
+   ═══════════════════════════════════════════════════════════ */
+
+// Already logged in?
+(function() {
+  // Eski session key'lerini temizle
+  try {
+    localStorage.removeItem('izt_session');
+    localStorage.removeItem('izt_session_persistent');
+    sessionStorage.removeItem('izt_session');
+  } catch(e) {}
+  
+  // Yeni auth sistemi — zaten giriş yapılmışsa app'e yönlendir
+  const token = sessionStorage.getItem('izt_token') || localStorage.getItem('izt_token');
+  const userRaw = sessionStorage.getItem('izt_user') || localStorage.getItem('izt_user');
+  if (token && userRaw) {
+    try {
+      const user = JSON.parse(userRaw);
+      if (user && user.id) window.location.href = 'app.html';
+    } catch(e) {}
+  }
+})();
+
+/* ── Slideshow ──────────────────────────────────────────────── */
+(function() {
+  const slides = document.querySelectorAll('.slide');
+  const dots   = document.querySelectorAll('.slide-dot');
+  let current  = 0, timer = null;
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    dots[current].classList.remove('active');
+    current = (n + slides.length) % slides.length;
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+  }
+
+  function startTimer() {
+    clearInterval(timer);
+    timer = setInterval(() => goTo(current + 1), 5500);
+  }
+
+  dots.forEach(dot => {
+    dot.addEventListener('click', () => { goTo(Number(dot.dataset.slide)); startTimer(); });
+  });
+
+  startTimer();
+})();
+
+/* ── Tab switching ──────────────────────────────────────────── */
+function switchTab(tabId) {
+  document.querySelectorAll('.auth-tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.auth-pane').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + tabId).classList.add('active');
+  document.getElementById('pane-' + tabId).classList.add('active');
+  clearErrors();
+  closeRegisterCollapse();
+}
+
+document.querySelectorAll('.auth-tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+});
+
+/* ── Collapsible Firma Kur ─────────────────────────────────── */
+const toggleBtn   = document.getElementById('toggleRegister');
+const regCollapse = document.getElementById('registerCollapse');
+
+toggleBtn.addEventListener('click', () => {
+  regCollapse.classList.contains('open') ? closeRegisterCollapse() : openRegisterCollapse();
+});
+
+function openRegisterCollapse() {
+  regCollapse.classList.add('open');
+  toggleBtn.classList.add('open');
+  toggleBtn.textContent = 'Kayıt Formunu Kapat';
+}
+
+function closeRegisterCollapse() {
+  regCollapse.classList.remove('open');
+  toggleBtn.classList.remove('open');
+  toggleBtn.textContent = 'Yeni Kurum Kaydı Oluştur';
+}
+
+/* ── Utilities ──────────────────────────────────────────────── */
+function clearErrors() {
+  document.querySelectorAll('.alert-error').forEach(e => e.classList.remove('show'));
+  document.querySelectorAll('.alert-success').forEach(e => e.classList.remove('show'));
+}
+
+function showError(elId, msgElId, msg) {
+  document.getElementById(elId).classList.add('show');
+  document.getElementById(msgElId).textContent = msg;
+}
+
+function setLoading(btnId, on, origHtml) {
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+  btn.disabled = on;
+  if (on)  btn.textContent = 'Lütfen bekleyiniz...';
+  else if (origHtml) btn.textContent = origHtml;
+}
+
+function createSession() {
+  window.location.href = 'app.html';
+}
+
+/* ── Password toggle ─────────────────────────────────────── */
+function bindPwdToggle(toggleId, inputId) {
+  const el = document.getElementById(toggleId);
+  const inp = document.getElementById(inputId);
+  if (!el || !inp) return;
+  el.addEventListener('click', () => {
+    const isText = inp.type === 'text';
+    inp.type = isText ? 'password' : 'text';
+    el.textContent = isText ? 'Göster' : 'Gizle';
+  });
+}
+bindPwdToggle('toggleAdminPwd', 'adminPassword');
+bindPwdToggle('toggleStaffPwd', 'staffPassword');
+
+// Varsayılan SuperAdmin Seed iptal, backend hallediyor
+
+/* ══════════════════════════════════════════════════════════
+   FORM 1 — Yönetici Giriş (Şirket Yöneticisi veya Sistem Yöneticisi)
+   ══════════════════════════════════════════════════════════ */
+document.getElementById('adminLoginForm').addEventListener('submit', async e => {
+  e.preventDefault(); clearErrors();
+  const uname = document.getElementById('adminUsername').value.trim().toLowerCase();
+  const pwd   = document.getElementById('adminPassword').value;
+  const rem   = document.getElementById('adminRemember').checked;
+  if (!uname || !pwd) { showError('adminError','adminErrorMsg','Lütfen e-posta veya kullanıcı adınızı ve şifrenizi giriniz.'); return; }
+
+  setLoading('adminLoginBtn', true);
+  try {
+    await Auth.login(uname, pwd, rem);
+    const user = Auth.user();
+    if (user.role !== 'admin' && user.role !== 'superadmin') {
+      Auth.logout();
+      showError('adminError','adminErrorMsg','Bu alandan sadece yöneticiler giriş yapabilir.');
+      setLoading('adminLoginBtn', false, 'Giriş Yap');
+      return;
+    }
+    createSession();
+  } catch(err) {
+    showError('adminError', 'adminErrorMsg', err.message || 'Giriş yapılamadı.');
+    setLoading('adminLoginBtn', false, 'Giriş Yap');
+  }
+});
+
+/* ══════════════════════════════════════════════════════════
+   FORM 2 — Yeni Kurum & Yönetici Kaydı (Doğrudan Giriş)
+   ══════════════════════════════════════════════════════════ */
+document.getElementById('registerForm').addEventListener('submit', async e => {
+  e.preventDefault(); clearErrors();
+  const company  = document.getElementById('regCompany').value.trim();
+  const username = document.getElementById('regUsername').value.trim();
+  const email    = document.getElementById('regEmail').value.trim();
+  const password = document.getElementById('regPassword').value;
+  const confirm  = document.getElementById('regPasswordConfirm').value;
+
+  if (!company || !username || !email || !password) { showError('adminError','adminErrorMsg','Lütfen tüm zorunlu alanları doldurunuz.'); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))     { showError('adminError','adminErrorMsg','Lütfen geçerli bir e-posta adresi giriniz.'); return; }
+  if (password.length < 6)  { showError('adminError','adminErrorMsg','Şifreniz en az 6 karakterden oluşmalıdır.'); return; }
+  if (password !== confirm) { showError('adminError','adminErrorMsg','Girilen şifreler birbiriyle uyuşmamaktadır.'); return; }
+
+  setLoading('registerBtn', true);
+  try {
+    await Auth.register(company, username, email, password);
+    createSession();
+  } catch(err) {
+    showError('adminError', 'adminErrorMsg', err.message || 'Kayıt sırasında bir hata oluştu.');
+    setLoading('registerBtn', false, 'Kurum ve Yönetici Hesabını Kaydet');
+  }
+});
+
+/* ══════════════════════════════════════════════════════════
+   FORM 3 — Personel Giriş (SADECE E-POSTA VE ŞİFRE)
+   ══════════════════════════════════════════════════════════ */
+document.getElementById('staffLoginForm').addEventListener('submit', async e => {
+  e.preventDefault(); clearErrors();
+  const email = document.getElementById('staffEmail').value.trim().toLowerCase();
+  const pwd   = document.getElementById('staffPassword').value;
+  const rem   = document.getElementById('staffRemember').checked;
+  if (!email || !pwd) { showError('staffError','staffErrorMsg','Lütfen kurumsal e-posta adresinizi ve şifrenizi giriniz.'); return; }
+
+  setLoading('staffLoginBtn', true);
+  try {
+    await Auth.login(email, pwd, rem);
+    const user = Auth.user();
+    if (user.role !== 'staff') {
+      Auth.logout();
+      showError('staffError','staffErrorMsg','Yöneticiler personel girişini kullanamaz.');
+      setLoading('staffLoginBtn', false, 'Giriş Yap');
+      return;
+    }
+    createSession();
+  } catch(err) {
+    showError('staffError', 'staffErrorMsg', err.message || 'Giriş yapılamadı.');
+    setLoading('staffLoginBtn', false, 'Giriş Yap');
+  }
+});
+</script>
+
+</body>
+</html>
