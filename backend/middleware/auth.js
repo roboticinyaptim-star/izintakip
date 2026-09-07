@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 
+// Token kontrolü
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
@@ -13,6 +14,7 @@ const authenticateToken = (req, res, next) => {
   });
 };
 
+// Rol yetki kontrolü
 const requireRole = (roles) => {
   return (req, res, next) => {
     if (!req.user || !roles.includes(req.user.role)) {

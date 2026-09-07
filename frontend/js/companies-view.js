@@ -1,7 +1,4 @@
-/* ============================================================
-   companies-view.js — SuperAdmin All Companies Management
-   ============================================================ */
-
+// Şirketler yönetim servisi
 const CompaniesView = {
   _searchQuery: '',
 
@@ -20,6 +17,7 @@ const CompaniesView = {
     }
   },
 
+  // Excel dışa aktar
   exportExcel() {
     if (typeof XLSX === 'undefined') {
       toast('Excel kütüphanesi yüklenemedi.', 'error');
@@ -75,6 +73,7 @@ const CompaniesView = {
     this._renderTable();
   },
 
+  // İstatistikleri hesapla
   _renderStats() {
     const companies = Companies.all();
     const staff = Users.all().filter(u => u.role === 'staff');
@@ -87,6 +86,7 @@ const CompaniesView = {
     document.getElementById('statPendingLeaves').textContent  = pending.length;
   },
 
+  // Şirketler tablosunu çiz
   _renderTable() {
     const tbody = document.getElementById('companiesTableBody');
     if (!tbody) return;
@@ -144,6 +144,7 @@ const CompaniesView = {
     }).join('');
   },
 
+  // Şirket personelini listele
   showStaff(companyId) {
     const company = Companies.byId(companyId);
     if (!company) return;
@@ -179,6 +180,7 @@ const CompaniesView = {
     openModal('companyDetailModal');
   },
 
+  // Şirketi sil
   deleteCompany(companyId) {
     const company = Companies.byId(companyId);
     if (!company) return;

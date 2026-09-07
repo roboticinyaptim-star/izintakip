@@ -1,7 +1,4 @@
-/* ============================================================
-   approvals.js — Admin approval interface
-   ============================================================ */
-
+// İzin onay modülü
 const Approvals = {
   _tab: 'pending',
 
@@ -10,6 +7,7 @@ const Approvals = {
     this._renderContent();
   },
 
+  // Sekmeleri çiz
   _renderTabs() {
     document.querySelectorAll('.tab-btn[data-apptab]').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.apptab === this._tab);
@@ -18,6 +16,7 @@ const Approvals = {
     document.getElementById('appPendingCount').textContent = count;
   },
 
+  // İçerik listesini çiz
   _renderContent() {
     const container = document.getElementById('approvalsContent');
     const leaves = this._tab === 'pending'
@@ -40,6 +39,7 @@ const Approvals = {
     container.innerHTML = leaves.map(l => this._cardHtml(l)).join('');
   },
 
+  // İzin onay kartı
   _cardHtml(leave) {
     const isPending = leave.status === 'pending';
 
@@ -119,12 +119,13 @@ const Approvals = {
       </div>`;
   },
 
+  // Onaylama işlemini başlat
   approve(leaveId) {
     LeaveForm.approve(leaveId);
-    // Re-render approvals after state change
     setTimeout(() => this.render(), 100);
   },
 
+  // Modülü başlat
   init() {
     document.querySelectorAll('.tab-btn[data-apptab]').forEach(btn => {
       btn.addEventListener('click', () => {

@@ -6,12 +6,12 @@ const router = express.Router();
 
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecret_izintakip_key_2026';
 
-// ── 1. LOGIN ──────────────────────────────────────────────────
+// Giriş işlemi
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
     
-    // Hem username hem email destekleyelim (Superadmin için username "admin" olabilir)
+    // Kullanıcıyı veritabanında ara
     const [rows] = await db.execute(
       'SELECT * FROM users WHERE email = ? OR username = ?',
       [email, email]
@@ -27,12 +27,13 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Hesabınız pasif durumdadır.' });
     }
 
+    // Şifreyi doğrula
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {
       return res.status(401).json({ error: 'Geçersiz e-posta veya şifre.' });
     }
 
-    // Token oluştur
+    // Token üret
     const tokenPayload = {
       id: user.id,
       companyId: user.company_id,
@@ -54,7 +55,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// ── 2. REGISTER (Firma Kur) ───────────────────────────────────
+// Firma kayıt işlemi
 router.post('/register', async (req, res) => {
   try {
     const { companyName, username, email, password } = req.body;
@@ -63,7 +64,7 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ error: 'Lütfen tüm alanları doldurun.' });
     }
 
-    // 1. E-posta kullanımda mı?
+    // Bilgiler kullanımda mı
     const [existing] = await db.execute('SELECT id FROM users WHERE email = ? OR username = ?', [email, username]);
     if (existing.length > 0) {
       return res.status(400).json({ error: 'Bu e-posta veya kullanıcı adı zaten kullanımda.' });
@@ -71,35 +72,35 @@ router.post('/register', async (req, res) => {
 
     const companyId = 'c_' + Date.now().toString(36) + Math.random().toString(36).substring(2, 6);
     const userId = 'u_' + Date.now().toString(36);
-    const companyCode = Math.floor(100000 + Math.random() * 900000).toString(); // 6 haneli
+    const companyCode = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // Şifreyi Hashle
+    // Şifreyi hashle
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Transaction başlat
+    // Veritabanı işlemi başlat
     const conn = await db.getConnection();
     await conn.beginTransaction();
 
     try {
-      // 1. Şirketi oluştur
+      // Şirket kaydı oluştur
       await conn.execute(
         'INSERT INTO companies (id, code, name, admin_id) VALUES (?, ?, ?, ?)',
         [companyId, companyCode, companyName, userId]
       );
 
-      // 2. Yöneticiyi oluştur
+      // Yönetici hesabı oluştur
       await conn.execute(
         `INSERT INTO users (id, company_id, username, email, password, role, name, department)
          VALUES (?, ?, ?, ?, ?, 'admin', 'Yönetici', 'Yönetim')`,
         [userId, companyId, username, email, hashedPassword]
       );
 
-      // 3. Varsayılan İzin Türleri (Yıllık, Mazeret vb.)
+      // Varsayılan izin türleri
       const defaultTypes = [
         [companyId, 'annual', 'Yıllık İzin', 14, true],
         [companyId, 'excuse', 'Mazeret İzni', 2, true],
-        [companyId, 'sick', 'Hastalık İzni', 0, true] // Belgesiz olmasın diye kurgulanabilir
+        [companyId, 'sick', 'Hastalık İzni', 0, true]
       ];
       
       for (const dt of defaultTypes) {
@@ -113,7 +114,7 @@ router.post('/register', async (req, res) => {
       await conn.commit();
       conn.release();
 
-      // Direkt giriş yaptır
+      // Token oluştur ve gönder
       const tokenPayload = {
         id: userId,
         companyId: companyId,

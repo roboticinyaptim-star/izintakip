@@ -1,8 +1,4 @@
-/* ============================================================
-   settings.js — Settings page (Admin: user mgmt, leave types,
-   telegram; Staff: profile)
-   ============================================================ */
-
+// Ayarlar sayfası servisi
 const AppSettings = {
   _editUserId: null,
   _editTypeId: null,
@@ -18,10 +14,10 @@ const AppSettings = {
     }
   },
 
-  // ── Admin HTML ────────────────────────────────────────────────
+  // Yönetici ayarları görünümü
   _adminHtml() {
     return `
-      <!-- Users -->
+      <!-- Personel listesi -->
       <div class="card" style="margin-bottom:20px">
         <div class="card-title">
           Personel Yönetimi
@@ -33,7 +29,7 @@ const AppSettings = {
         <div id="usersList">${this._usersListHtml()}</div>
       </div>
 
-      <!-- Leave Types -->
+      <!-- İzin türleri -->
       <div class="card" style="margin-bottom:20px">
         <div class="card-title">
           İzin Türleri
@@ -45,7 +41,7 @@ const AppSettings = {
         <div id="leaveTypesList">${this._leaveTypesHtml()}</div>
       </div>
 
-      <!-- Telegram -->
+      <!-- Telegram ayarları -->
       <div class="card" style="margin-bottom:20px">
         <div class="card-title">Telegram Bildirim Ayarları</div>
         <div class="telegram-section">
@@ -71,7 +67,7 @@ const AppSettings = {
           <button class="btn btn-outline" id="testTelegramBtn" style="margin-left:8px">Test Gönder</button>
         </div>
 
-        <!-- Error Logs -->
+        <!-- Hata kayıtları -->
         <div style="margin-top:20px">
           <div class="card-title" style="font-size:.82rem;margin-bottom:12px">Hata Logları
             <button class="btn btn-ghost btn-sm" id="clearLogsBtn">Temizle</button>
@@ -147,7 +143,7 @@ const AppSettings = {
       ).join('') + '</div>';
   },
 
-  // ── Profile HTML (Staff) ──────────────────────────────────────
+  // Personel profil görünümü
   _profileHtml() {
     const u = Auth.user();
     return `
@@ -179,13 +175,13 @@ const AppSettings = {
     `;
   },
 
-  // ── Admin Events ──────────────────────────────────────────────
+  // Yönetici olay dinleyicileri
   _bindAdminEvents() {
-    // Telegram settings load
     const settings = Settings.get();
     document.getElementById('tgBotToken').value = settings.telegramBotToken || '';
     document.getElementById('tgChatId').value   = settings.telegramChatId || '';
 
+    // Telegram ayarlarını kaydet
     document.getElementById('saveTelegramBtn').addEventListener('click', async () => {
       const token = document.getElementById('tgBotToken').value.trim();
       const chatId = document.getElementById('tgChatId').value.trim();
@@ -196,6 +192,7 @@ const AppSettings = {
       toast('Telegram ayarları başarıyla kaydedildi.', 'success');
     });
 
+    // Telegram testi yap
     document.getElementById('testTelegramBtn').addEventListener('click', async () => {
       const token = document.getElementById('tgBotToken').value.trim();
       const chatId = document.getElementById('tgChatId').value.trim();
@@ -209,6 +206,7 @@ const AppSettings = {
       toast(ok ? 'Test mesajı Telegram\'a gönderildi!' : 'Gönderim başarısız. Aşağıdaki hata logunu kontrol edin.', ok ? 'success' : 'error');
     });
 
+    // Hata kayıtlarını temizle
     document.getElementById('clearLogsBtn').addEventListener('click', () => {
       ErrorLogs.save([]);
       document.getElementById('errorLogsList').innerHTML = '<p style="color:var(--text-muted);font-size:.78rem">Hata logu yok.</p>';
@@ -218,17 +216,18 @@ const AppSettings = {
     document.getElementById('addUserBtn').addEventListener('click', () => this.openUserModal());
     document.getElementById('addLeaveTypeBtn').addEventListener('click', () => this.openLeaveTypeModal());
 
-    // User modal
+    // Kullanıcı modal butonları
     document.getElementById('userModalClose').addEventListener('click',  () => closeModal('userModal'));
     document.getElementById('userModalCancel').addEventListener('click', () => closeModal('userModal'));
     document.getElementById('userModalSave').addEventListener('click',   () => this.saveUser());
 
-    // Leave type modal
+    // İzin türü butonları
     document.getElementById('leaveTypeModalClose').addEventListener('click',  () => closeModal('leaveTypeModal'));
     document.getElementById('leaveTypeModalCancel').addEventListener('click', () => closeModal('leaveTypeModal'));
     document.getElementById('leaveTypeModalSave').addEventListener('click',   () => this.saveLeaveType());
   },
 
+  // Profil olay dinleyicileri
   _bindProfileEvents() {
     document.getElementById('saveProfileBtn').addEventListener('click', () => {
       const name    = document.getElementById('profileName').value.trim();
@@ -253,7 +252,7 @@ const AppSettings = {
     });
   },
 
-  // ── User Modal ────────────────────────────────────────────────
+  // Kullanıcı modalını aç
   openUserModal(userId = null) {
     this._editUserId = userId;
     const title = document.getElementById('userModalTitle');
@@ -284,6 +283,7 @@ const AppSettings = {
     openModal('userModal');
   },
 
+  // Kullanıcıyı kaydet
   async saveUser() {
     const name     = document.getElementById('userModalName').value.trim();
     const dept     = document.getElementById('userModalDept').value.trim();
@@ -337,6 +337,7 @@ const AppSettings = {
 
   editUser(userId) { this.openUserModal(userId); },
 
+  // Kullanıcı durumunu değiştir
   async toggleUser(userId, currentStatus) {
     const isCurrentlyActive = Boolean(currentStatus);
     const newStatus = !isCurrentlyActive;
@@ -350,6 +351,7 @@ const AppSettings = {
     }
   },
 
+  // Personeli sil
   async deleteUser(userId) {
     if (userId === Auth.userId()) {
       toast('Kendi hesabınızı silemezsiniz.', 'warning');
@@ -370,7 +372,7 @@ const AppSettings = {
     }
   },
 
-  // ── Leave Type Modal ──────────────────────────────────────────
+  // İzin türü modalı
   openLeaveTypeModal(typeId = null) {
     this._editTypeId = typeId;
     if (typeId) {
@@ -382,6 +384,7 @@ const AppSettings = {
     openModal('leaveTypeModal');
   },
 
+  // İzin türünü kaydet
   saveLeaveType() {
     const name = document.getElementById('leaveTypeModalName').value.trim();
     if (!name) { toast('İzin türü adı boş olamaz.', 'warning'); return; }
@@ -400,6 +403,7 @@ const AppSettings = {
 
   editLeaveType(typeId) { this.openLeaveTypeModal(typeId); },
 
+  // İzin türünü aç/kapat
   toggleLeaveType(typeId) {
     LeaveTypes.toggle(typeId);
     document.getElementById('leaveTypesList').innerHTML = this._leaveTypesHtml();

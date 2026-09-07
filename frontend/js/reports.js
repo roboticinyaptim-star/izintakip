@@ -1,7 +1,4 @@
-/* ============================================================
-   reports.js — Reporting + Excel export (Native & SheetJS)
-   ============================================================ */
-
+// Raporlama servisi
 const Reports = {
   _results: [],
 
@@ -10,8 +7,9 @@ const Reports = {
     this._applyFilters();
   },
 
+  // Açılır menüleri doldur
   _populateDropdowns() {
-    // Users - Kurumdaki tüm personel ve yöneticiler
+    // Personel listesi
     const userSel = document.getElementById('rptUser');
     if (userSel) {
       const users = Users.all().filter(u => u.role !== 'superadmin');
@@ -19,7 +17,7 @@ const Reports = {
         users.map(u => `<option value="${u.id}">${u.name}${u.department ? ' — ' + u.department : ''}</option>`).join('');
     }
 
-    // Types - Tüm izin türleri
+    // İzin türleri
     const typeSel = document.getElementById('rptType');
     if (typeSel) {
       const types = LeaveTypes.ofCompany();
@@ -41,7 +39,7 @@ const Reports = {
     const typeId    = typeEl  ? typeEl.value  : '';
     const status    = statEl  ? statEl.value  : '';
 
-    // Leaves.filter fonksiyonu ile kayıtları getir
+    // İzin kayıtlarını getir
     if (typeof Leaves.filter === 'function') {
       this._results = Leaves.filter({ userId, startDate, endDate, leaveTypeId: typeId, status });
     } else {
@@ -54,6 +52,7 @@ const Reports = {
     this._renderTable();
   },
 
+  // Filtreleri sıfırla
   _resetFilters() {
     ['rptUser', 'rptStartDate', 'rptEndDate', 'rptType', 'rptStatus'].forEach(id => {
       const el = document.getElementById(id);
@@ -63,6 +62,7 @@ const Reports = {
     toast('Filtreler sıfırlandı.', 'info');
   },
 
+  // Rapor tablosunu çiz
   _renderTable() {
     const tbody = document.getElementById('reportTableBody');
     if (!tbody) return;
@@ -90,6 +90,7 @@ const Reports = {
     `).join('');
   },
 
+  // Excel dışa aktar
   exportExcel() {
     if (this._exporting) return;
     this._exporting = true;
@@ -122,7 +123,7 @@ const Reports = {
     const dateStr = new Date().toLocaleDateString('tr-TR').replace(/\./g, '-');
     const fileName = `izin-raporu-${dateStr}`;
 
-    // 1. SheetJS (xlsx.full.min.js) yüklüyse doğrudan .xlsx oluştur
+    // SheetJS excel çıktısı
     if (typeof XLSX !== 'undefined' && XLSX.utils) {
       try {
         const ws = XLSX.utils.json_to_sheet(rows);
@@ -140,7 +141,7 @@ const Reports = {
       }
     }
 
-    // 2. Fallback: Harici kütüphane gerektirmeyen native Excel (.xls) çıktısı
+    // Temel excel çıktısı
     try {
       const headers = Object.keys(rows[0]);
       let tableHtml = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
@@ -169,6 +170,7 @@ const Reports = {
     }
   },
 
+  // Olay dinleyicileri bağla
   init() {
     const rptBtn = document.getElementById('rptFilterBtn');
     if (rptBtn) rptBtn.addEventListener('click', () => this._applyFilters());

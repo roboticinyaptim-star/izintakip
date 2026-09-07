@@ -1,40 +1,36 @@
-/* ============================================================
-   app.js — Main application entry point (v2)
-   ============================================================ */
-
+// Ana uygulama başlatıcı
 (async function () {
   'use strict';
 
-  // ── 1. Auth check ──────────────────────────────────────────
+  // Oturum kontrolü
   const session = Auth.init();
-  if (!session) return; // redirected to login
+  if (!session) return;
 
-  // Load backend data
+  // Verileri sunucudan yükle
   const dataLoaded = await initializeDataFromAPI();
   if (!dataLoaded) {
      Auth.logout();
      return;
   }
 
-  // ── 2. Setup sidebar user info ─────────────────────────────
+  // Kullanıcı bilgilerini yaz
   const user = Auth.user();
   document.getElementById('sidebarAvatarText').textContent = initials(user.name);
   document.getElementById('sidebarUserName').textContent   = user.name;
   document.getElementById('sidebarUserRole').textContent   =
     user.role === 'superadmin' ? 'Sistem Yöneticisi' : (user.role === 'admin' ? 'Yönetici' : 'Personel');
 
-  // ── Role-based UI visibility ─────────────────────────────────
+  // Rol görünürlük ayarları
   if (Auth.isSuperAdmin()) {
     document.querySelectorAll('.superadmin-only').forEach(el => el.style.display = 'flex');
     document.querySelectorAll('.hide-superadmin').forEach(el => el.style.display = 'none');
   } else if (user.role === 'staff') {
     document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
   } else if (user.role === 'admin') {
-    // Admin (şirket yöneticisi) personelin gördüğü her şeyi görür + admin-only
+    // Yönetici tümünü görür
   }
 
-  // ── 3. Logout — custom modal yerine basit overlay ─────────
-  // (confirm() file:// protokolünde bloke olabilir)
+  // Çıkış yapma işlemleri
   const logoutBtn = document.getElementById('logoutBtn');
   const logoutOverlay = document.getElementById('logoutOverlay');
   const logoutConfirmBtn = document.getElementById('logoutConfirmBtn');
@@ -56,7 +52,7 @@
     if (e.target === logoutOverlay) logoutOverlay.classList.remove('open');
   });
 
-  // ── 4. Dashboard "See All" links ───────────────────────────
+  // Tümünü gör bağlantısı
   const dashSeeAll = document.getElementById('dashSeeAllBtn');
   if (dashSeeAll) {
     dashSeeAll.addEventListener('click', (e) => {
@@ -65,16 +61,16 @@
     });
   }
 
-  // ── 5. Initialize all modules ──────────────────────────────
+  // Modülleri başlat
   Calendar.init();
   History.init();
   Approvals.init();
   Reports.init();
   CompaniesView.init();
   LeaveForm.init();
-  Router.init(); // navigates to dashboard + renders
+  Router.init();
 
-  // ── 6. Refresh pending badge periodically (30s) ────────────
+  // Bildirim sayacını güncelle
   setInterval(() => {
     Dashboard._updatePendingBadge();
   }, 30000);

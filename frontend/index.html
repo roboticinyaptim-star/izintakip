@@ -12,12 +12,10 @@
 
 <div class="login-wrapper">
 
-  <!-- ═══════════════════════════════════════════════════════
-       LEFT — Slideshow (bilgisayar / ofis ortamı fotoğrafları)
-       ═══════════════════════════════════════════════════════ -->
+  <!-- Tanıtım slayt alanı -->
   <div class="slide-panel">
 
-    <!-- Brand -->
+    <!-- Logo ve başlık -->
     <div class="slide-brand">
       <div class="slide-brand-icon">
         <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
@@ -28,7 +26,7 @@
       </div>
     </div>
 
-    <!-- Slide 1 -->
+    <!-- Birinci slayt -->
     <div class="slide active" id="slide-0">
       <img class="slide-img" src="img/slide1.jpg" alt="Kurumsal ofis — çalışanlar ve bilgisayarlar" />
       <div class="slide-content">
@@ -38,7 +36,7 @@
       </div>
     </div>
 
-    <!-- Slide 2 -->
+    <!-- İkinci slayt -->
     <div class="slide" id="slide-1">
       <img class="slide-img" src="img/slide2.jpg" alt="Kurumsal toplantı odası" />
       <div class="slide-content">
@@ -48,7 +46,7 @@
       </div>
     </div>
 
-    <!-- Slide 3 -->
+    <!-- Üçüncü slayt -->
     <div class="slide" id="slide-2">
       <img class="slide-img" src="img/slide3.jpg" alt="Modern kurumsal ofis ve çalışma alanı" />
       <div class="slide-content">
@@ -58,21 +56,19 @@
       </div>
     </div>
 
-    <!-- Dot indicators -->
+    <!-- Slayt noktaları -->
     <div class="slide-dots">
       <button class="slide-dot active" data-slide="0" aria-label="Slayt 1"></button>
       <button class="slide-dot"        data-slide="1" aria-label="Slayt 2"></button>
       <button class="slide-dot"        data-slide="2" aria-label="Slayt 3"></button>
     </div>
 
-  </div><!-- /slide-panel -->
+  </div>
 
-  <!-- ═══════════════════════════════════════════════════════
-       RIGHT — Auth Panel (2 tabs)
-       ═══════════════════════════════════════════════════════ -->
+  <!-- Giriş paneli -->
   <div class="auth-panel">
 
-    <!-- Mobile logo -->
+    <!-- Mobil logo -->
     <div class="auth-logo-mobile">
       <div class="slide-brand-icon" style="width:40px;height:40px;border-radius:11px">
         <svg viewBox="0 0 24 24" style="width:22px;height:22px;fill:#fff"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
@@ -88,13 +84,13 @@
       <p class="auth-panel-sub">Lütfen yetki alanınıza uygun oturum açma seçeneğini kullanınız.</p>
     </div>
 
-    <!-- 2 Tabs -->
+    <!-- Giriş sekmeleri -->
     <div class="auth-tabs" role="tablist">
       <button class="auth-tab-btn active" role="tab" data-tab="admin" id="tab-admin">Yönetici Girişi</button>
       <button class="auth-tab-btn" role="tab" data-tab="staff" id="tab-staff">Personel Girişi</button>
     </div>
 
-    <!-- ══ PANE: Yönetici ══════════════════════════════════ -->
+    <!-- Yönetici sekmesi -->
     <div class="auth-pane active" id="pane-admin">
 
       <div class="alert-error" id="adminError">
@@ -126,7 +122,7 @@
         <button type="submit" class="btn-submit" id="adminLoginBtn">Giriş Yap</button>
       </form>
 
-      <!-- Collapsible: Yeni Firma Kur -->
+      <!-- Firma kayıt butonu -->
       <div class="new-company-toggle" id="toggleRegister">
         Yeni Kurum Kaydı Oluştur
       </div>
@@ -173,9 +169,9 @@
         </div>
       </div>
 
-    </div><!-- /pane-admin -->
+    </div>
 
-    <!-- ══ PANE: Personel ══════════════════════════════════ -->
+    <!-- Personel sekmesi -->
     <div class="auth-pane" id="pane-staff">
 
       <div class="alert-error" id="staffError">
@@ -205,30 +201,25 @@
         <button type="submit" class="btn-submit" id="staffLoginBtn">Giriş Yap</button>
       </form>
 
-    </div><!-- /pane-staff -->
+    </div>
 
-  </div><!-- /auth-panel -->
+  </div>
 
-</div><!-- /login-wrapper -->
+</div>
 
 <script src="js/data.js"></script>
 <script src="js/auth.js"></script>
 
 <script>
-/* ═══════════════════════════════════════════════════════════
-   LOGIN LOGIC
-   ═══════════════════════════════════════════════════════════ */
-
-// Already logged in?
+// Giriş kontrolü
 (function() {
-  // Eski session key'lerini temizle
   try {
     localStorage.removeItem('izt_session');
     localStorage.removeItem('izt_session_persistent');
     sessionStorage.removeItem('izt_session');
   } catch(e) {}
   
-  // Yeni auth sistemi — zaten giriş yapılmışsa app'e yönlendir
+  // Ziyaretçi oturum kontrolü
   const token = sessionStorage.getItem('izt_token') || localStorage.getItem('izt_token');
   const userRaw = sessionStorage.getItem('izt_user') || localStorage.getItem('izt_user');
   if (token && userRaw) {
@@ -239,7 +230,7 @@
   }
 })();
 
-/* ── Slideshow ──────────────────────────────────────────────── */
+// Slayt gösterisi başlatıcı
 (function() {
   const slides = document.querySelectorAll('.slide');
   const dots   = document.querySelectorAll('.slide-dot');
@@ -265,7 +256,7 @@
   startTimer();
 })();
 
-/* ── Tab switching ──────────────────────────────────────────── */
+// Sekme değiştirme işlemi
 function switchTab(tabId) {
   document.querySelectorAll('.auth-tab-btn').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.auth-pane').forEach(p => p.classList.remove('active'));
@@ -279,7 +270,7 @@ document.querySelectorAll('.auth-tab-btn').forEach(btn => {
   btn.addEventListener('click', () => switchTab(btn.dataset.tab));
 });
 
-/* ── Collapsible Firma Kur ─────────────────────────────────── */
+// Kayıt formu aç/kapat
 const toggleBtn   = document.getElementById('toggleRegister');
 const regCollapse = document.getElementById('registerCollapse');
 
@@ -299,17 +290,19 @@ function closeRegisterCollapse() {
   toggleBtn.textContent = 'Yeni Kurum Kaydı Oluştur';
 }
 
-/* ── Utilities ──────────────────────────────────────────────── */
+// Hata mesajlarını temizle
 function clearErrors() {
   document.querySelectorAll('.alert-error').forEach(e => e.classList.remove('show'));
   document.querySelectorAll('.alert-success').forEach(e => e.classList.remove('show'));
 }
 
+// Hata mesajı göster
 function showError(elId, msgElId, msg) {
   document.getElementById(elId).classList.add('show');
   document.getElementById(msgElId).textContent = msg;
 }
 
+// Yükleniyor durumu ayarla
 function setLoading(btnId, on, origHtml) {
   const btn = document.getElementById(btnId);
   if (!btn) return;
@@ -318,11 +311,12 @@ function setLoading(btnId, on, origHtml) {
   else if (origHtml) btn.textContent = origHtml;
 }
 
+// Panele yönlendir
 function createSession() {
   window.location.href = 'app.html';
 }
 
-/* ── Password toggle ─────────────────────────────────────── */
+// Şifre göster/gizle
 function bindPwdToggle(toggleId, inputId) {
   const el = document.getElementById(toggleId);
   const inp = document.getElementById(inputId);
@@ -336,11 +330,7 @@ function bindPwdToggle(toggleId, inputId) {
 bindPwdToggle('toggleAdminPwd', 'adminPassword');
 bindPwdToggle('toggleStaffPwd', 'staffPassword');
 
-// Varsayılan SuperAdmin Seed iptal, backend hallediyor
-
-/* ══════════════════════════════════════════════════════════
-   FORM 1 — Yönetici Giriş (Şirket Yöneticisi veya Sistem Yöneticisi)
-   ══════════════════════════════════════════════════════════ */
+// Yönetici giriş formu
 document.getElementById('adminLoginForm').addEventListener('submit', async e => {
   e.preventDefault(); clearErrors();
   const uname = document.getElementById('adminUsername').value.trim().toLowerCase();
@@ -365,9 +355,7 @@ document.getElementById('adminLoginForm').addEventListener('submit', async e => 
   }
 });
 
-/* ══════════════════════════════════════════════════════════
-   FORM 2 — Yeni Kurum & Yönetici Kaydı (Doğrudan Giriş)
-   ══════════════════════════════════════════════════════════ */
+// Yeni firma kaydı
 document.getElementById('registerForm').addEventListener('submit', async e => {
   e.preventDefault(); clearErrors();
   const company  = document.getElementById('regCompany').value.trim();
@@ -391,9 +379,7 @@ document.getElementById('registerForm').addEventListener('submit', async e => {
   }
 });
 
-/* ══════════════════════════════════════════════════════════
-   FORM 3 — Personel Giriş (SADECE E-POSTA VE ŞİFRE)
-   ══════════════════════════════════════════════════════════ */
+// Personel giriş formu
 document.getElementById('staffLoginForm').addEventListener('submit', async e => {
   e.preventDefault(); clearErrors();
   const email = document.getElementById('staffEmail').value.trim().toLowerCase();

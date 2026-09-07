@@ -1,7 +1,4 @@
-/* ============================================================
-   dashboard.js — Dashboard rendering
-   ============================================================ */
-
+// Gösterge paneli servisi
 const Dashboard = {
   render() {
     if (Auth.isAdmin()) {
@@ -77,7 +74,7 @@ const Dashboard = {
       </div>
     `;
 
-    // Right card: staff sees their own pending list
+    // Bekleyen talepler listesi
     document.getElementById('dashRightCardTitle').textContent = 'Aktif İzin Taleplerim';
     const pending = Leaves.byUser(sessionUser.id).filter(l => l.status === 'pending');
     const container = document.getElementById('pendingLeavesList');
@@ -144,7 +141,7 @@ const Dashboard = {
       </div>
     `;
 
-    // Right card: pending approvals for admin
+    // Yönetici bekleyen onaylar
     document.getElementById('adminPendingCard').style.display = '';
     document.getElementById('dashRightCardTitle').textContent = 'Bekleyen Onaylar';
     const container = document.getElementById('pendingLeavesList');
@@ -159,7 +156,7 @@ const Dashboard = {
     const user = Auth.user();
     const isAdmin = Auth.isAdmin();
 
-    // Kart başlığını dinamik belirle
+    // Kart başlığını belirle
     const cardTitleEl = document.querySelector('#recentLeaves')?.previousElementSibling;
     if (cardTitleEl) {
       const seeAllBtn = document.getElementById('dashSeeAllBtn');
@@ -175,7 +172,7 @@ const Dashboard = {
     if (isAdmin) {
       leaves = Leaves.ofCompany().slice().sort((a,b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)).slice(0, 10);
     } else {
-      // Personel için: Kendi aldığı tüm izinleri doğrudan listele
+      // Personel izinlerini filtrele
       const userLeaves = user ? Leaves.byUser(user.id) : [];
       const source = (userLeaves && userLeaves.length > 0) ? userLeaves : Leaves.all();
       leaves = source.slice().sort((a,b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)).slice(0, 15);
@@ -191,11 +188,12 @@ const Dashboard = {
     container.innerHTML = leaves.map(l => this._leaveItemHtml(l, isAdmin)).join('');
   },
 
+  // İzin satırı şablonu
   _leaveItemHtml(leave, showUser = false) {
     const user = Users.byId(leave.userId);
     const userName = user ? user.name : (leave.userName || 'Personel');
     
-    // leaveTypeKey'den ismi bulalım
+    // İzin türünü bul
     const typeKey = leave.leave_type_key || leave.leaveTypeKey || leave.leaveTypeId;
     const typeObj = LeaveTypes.byKey(typeKey);
     const leaveTypeName = typeObj ? typeObj.name : (leave.leaveTypeName || 'İzin');
@@ -229,6 +227,7 @@ const Dashboard = {
       </div>`;
   },
 
+  // Bekleyen sayacını güncelle
   _updatePendingBadge() {
     const count = Leaves.pending().length;
     const badge = document.getElementById('pendingBadge');

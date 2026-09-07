@@ -1,7 +1,4 @@
-/* ============================================================
-   calendar.js — Monthly calendar rendering
-   ============================================================ */
-
+// Takvim görünüm servisi
 const Calendar = {
   _date: new Date(),
 
@@ -9,19 +6,19 @@ const Calendar = {
     this._renderGrid();
   },
 
+  // Takvim ızgarasını çiz
   _renderGrid() {
     const year  = this._date.getFullYear();
     const month = this._date.getMonth();
 
-    // Header label
+    // Ay adı başlığı
     const monthNames = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran',
                         'Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
     document.getElementById('calMonthLabel').textContent = `${monthNames[month]} ${year}`;
 
-    // Get leaves for current user/all
+    // Kullanıcı izinlerini filtrele
     const isAdmin = Auth.isAdmin();
     const uid     = Auth.userId();
-    // Patch any leaves missing userName from older seed data
     const allLeaves = (isAdmin ? Leaves.ofCompany() : Leaves.byUser(uid)).map(l => {
       if (!l.userName) {
         const u = Users.byId(l.userId);
@@ -31,7 +28,7 @@ const Calendar = {
       return l;
     });
 
-    // Filter to current month
+    // Seçili ayı filtrele
     const monthStr = `${year}-${String(month+1).padStart(2,'0')}`;
     const monthLeaves = allLeaves.filter(l => {
       const startM = l.startDate.substring(0,7);
@@ -39,21 +36,21 @@ const Calendar = {
       return startM <= monthStr && endM >= monthStr;
     });
 
-    // Build calendar grid
+    // Takvim ızgarasını oluştur
     const firstDay = new Date(year, month, 1);
     const lastDay  = new Date(year, month+1, 0);
-    let startDow   = firstDay.getDay(); // 0=Sun
-    if (startDow === 0) startDow = 7;  // Monday-first
+    let startDow   = firstDay.getDay();
+    if (startDow === 0) startDow = 7;
     startDow -= 1;
 
     const todayDate = new Date(); todayDate.setHours(0,0,0,0);
     const grid = document.getElementById('calendarGrid');
 
-    // Day headers
+    // Gün başlıkları
     const dayHeaders = ['Pzt','Sal','Çar','Per','Cum','Cmt','Paz'];
     let html = dayHeaders.map(d => `<div class="cal-day-header">${d}</div>`).join('');
 
-    // Fill previous month days
+    // Önceki ay günleri
     for (let i = 0; i < startDow; i++) {
       const d = new Date(year, month, -startDow + i + 1);
       html += `<div class="cal-day other-month">
@@ -61,7 +58,7 @@ const Calendar = {
       </div>`;
     }
 
-    // Fill current month days
+    // Mevcut ay günleri
     for (let day = 1; day <= lastDay.getDate(); day++) {
       const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
       const cellDate = new Date(year, month, day); cellDate.setHours(0,0,0,0);
@@ -69,7 +66,7 @@ const Calendar = {
       const dow      = cellDate.getDay();
       const isWeekend = dow === 0 || dow === 6;
 
-      // Leaves for this day
+      // Bu günün izinleri
       const dayLeaves = monthLeaves.filter(l => {
         const s = l.startDate; const e = l.endDate || s;
         return s <= dateStr && e >= dateStr;
@@ -96,7 +93,7 @@ const Calendar = {
         </div>`;
     }
 
-    // Fill remaining cells
+    // Kalan boş hücreler
     const totalCells = startDow + lastDay.getDate();
     const remaining  = totalCells % 7 === 0 ? 0 : 7 - (totalCells % 7);
     for (let i = 1; i <= remaining; i++) {
@@ -106,8 +103,8 @@ const Calendar = {
     grid.innerHTML = html;
   },
 
+  // Güne tıklama işlemi
   _dayClick(dateStr) {
-    // If staff: open leave form pre-filled with that date
     if (!Auth.isAdmin()) {
       LeaveForm.open();
       setTimeout(() => {
@@ -118,6 +115,7 @@ const Calendar = {
     }
   },
 
+  // Takvim butonlarını bağla
   init() {
     document.getElementById('calPrev').addEventListener('click', () => {
       this._date.setMonth(this._date.getMonth() - 1);

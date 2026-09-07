@@ -1,10 +1,8 @@
-/* ============================================================
-   auth.js — Session management (API Token Based)
-   ============================================================ */
-
+// Kimlik doğrulama servisi
 const Auth = {
   _session: null,
 
+  // Kullanıcı girişi
   async login(email, password, isPersistent = false) {
     const res = await apiFetch('/auth/login', {
       method: 'POST',
@@ -23,6 +21,7 @@ const Auth = {
     return true;
   },
 
+  // Yeni firma kaydı
   async register(companyName, username, email, password) {
     const res = await apiFetch('/auth/register', {
       method: 'POST',
@@ -35,6 +34,7 @@ const Auth = {
     return true;
   },
 
+  // Oturum kontrolü
   init() {
     const raw   = sessionStorage.getItem('izt_user')  || localStorage.getItem('izt_user');
     const token = sessionStorage.getItem('izt_token') || localStorage.getItem('izt_token');
@@ -46,7 +46,7 @@ const Auth = {
     
     try {
       this._session = JSON.parse(raw);
-      // Token'ı her zaman sessionStorage'a da yaz (apiFetch için)
+      // Tokeni hafızaya yaz
       if (!sessionStorage.getItem('izt_token')) {
         sessionStorage.setItem('izt_token', token);
       }
@@ -55,7 +55,7 @@ const Auth = {
       return null;
     }
 
-    // companyId zorunlu — superadmin hariç (superadmin'in companyId'si 'system' olabilir)
+    // Şirket kontrolü
     if (!this._session.companyId && this._session.role !== 'superadmin') {
       this.logout();
       return null;
@@ -72,6 +72,7 @@ const Auth = {
   isAdmin()      { return this._session && (this._session.role === 'admin' || this._session.role === 'superadmin'); },
   isStaff()      { return this._session && this._session.role === 'staff'; },
 
+  // Oturum bilgilerini yenile
   refreshUser() {
     if (!this._session) return;
     const user = Users.byId(this._session.id);
@@ -82,6 +83,7 @@ const Auth = {
     }
   },
 
+  // Çıkış yap
   logout() {
     sessionStorage.removeItem('izt_token');
     sessionStorage.removeItem('izt_user');
@@ -90,8 +92,8 @@ const Auth = {
     this._redirectToLogin();
   },
 
+  // Giriş sayfasına yönlendir
   _redirectToLogin() {
-    // Sadece index.html'de DEĞİLSEK login'e yönlendir
     if (!window.location.pathname.includes('index.html')) {
       window.location.href = 'index.html';
     }

@@ -1,19 +1,16 @@
-/* ============================================================
-   leave-form.js — Leave creation form + Detail modal
-   ============================================================ */
-
+// İzin formu servisi
 const LeaveForm = {
   _currentTab: 'daily',
   _rejectLeaveId: null,
   _processing: false,
 
   init() {
-    // Tab switcher
+    // Sekme geçişleri
     document.querySelectorAll('.tab-btn[data-tab]').forEach(btn => {
       btn.addEventListener('click', () => this._switchTab(btn.dataset.tab));
     });
 
-    // Date/time auto-calc
+    // Otomatik süre hesabı
     ['dailyStart', 'dailyEnd'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.addEventListener('change', () => this._calcDaily());
@@ -23,13 +20,13 @@ const LeaveForm = {
       if (el) el.addEventListener('change', () => this._calcHourly());
     });
 
-    // Open buttons
+    // Açma butonları
     const nlb = document.getElementById('newLeaveBtn');
     if (nlb) nlb.addEventListener('click', () => this.open());
     const dnlb = document.getElementById('dashNewLeaveBtn');
     if (dnlb) dnlb.addEventListener('click', () => this.open());
 
-    // Close buttons
+    // Kapatma butonları
     ['leaveModalClose', 'leaveModalCancel'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.addEventListener('click', () => closeModal('leaveModal'));
@@ -37,11 +34,11 @@ const LeaveForm = {
     const dmc = document.getElementById('detailModalClose');
     if (dmc) dmc.addEventListener('click', () => closeModal('detailModal'));
 
-    // Submit
+    // Form gönderme butonu
     const lsb = document.getElementById('leaveSubmitBtn');
     if (lsb) lsb.addEventListener('click', () => this._submit());
 
-    // Reject modal
+    // Ret modalı butonları
     ['rejectModalClose', 'rejectModalCancel'].forEach(id => {
       const el = document.getElementById(id);
       if (el) el.addEventListener('click', () => closeModal('rejectModal'));
@@ -49,10 +46,10 @@ const LeaveForm = {
     const rcb = document.getElementById('rejectConfirmBtn');
     if (rcb) rcb.addEventListener('click', () => this._confirmReject());
 
-    // Populate leave types
+    // İzin türlerini listele
     this._populateLeaveTypes();
 
-    // Default dates
+    // Varsayılan bugünün tarihi
     const today = todayStr();
     const ds = document.getElementById('dailyStart');
     if (ds) ds.value = today;
@@ -62,6 +59,7 @@ const LeaveForm = {
     if (hd) hd.value = today;
   },
 
+  // Formu aç
   open() {
     this._clearForm();
     this._populateLeaveTypes();
@@ -73,6 +71,7 @@ const LeaveForm = {
     openModal('leaveModal');
   },
 
+  // Sekme değiştir
   _switchTab(tab) {
     this._currentTab = tab;
     document.querySelectorAll('.tab-btn[data-tab]').forEach(b =>
@@ -82,12 +81,14 @@ const LeaveForm = {
     document.getElementById('leaveFormError').style.display = 'none';
   },
 
+  // İzin türü seçenekleri
   _populateLeaveTypes() {
     const sel = document.getElementById('leaveTypeSelect');
     const types = LeaveTypes.active();
     sel.innerHTML = types.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
   },
 
+  // Günlük süre hesapla
   _calcDaily() {
     const s = document.getElementById('dailyStart').value;
     const e = document.getElementById('dailyEnd').value;
@@ -100,6 +101,7 @@ const LeaveForm = {
     val.textContent = days > 0 ? `${days} iş günü` : 'Geçersiz tarih aralığı';
   },
 
+  // Saatlik süre hesapla
   _calcHourly() {
     const s = document.getElementById('hourlyStart').value;
     const e = document.getElementById('hourlyEnd').value;
@@ -115,6 +117,7 @@ const LeaveForm = {
       : 'Geçersiz saat aralığı';
   },
 
+  // Formu temizle
   _clearForm() {
     ['dailyStart','dailyEnd','hourlyDate','hourlyStart','hourlyEnd','leaveDescription'].forEach(id => {
       const el = document.getElementById(id);
@@ -126,6 +129,7 @@ const LeaveForm = {
     this._switchTab('daily');
   },
 
+  // Formu sunucuya kaydet
   async _submit() {
     if (this._processing) return;
 
@@ -161,10 +165,10 @@ const LeaveForm = {
       closeModal('leaveModal');
       toast('İzin talebiniz başarıyla oluşturuldu!', 'success');
 
-      // Telegram notification
+      // Telegram bildirimi gönder
       if(leave) Telegram.notifyNewLeave(leave);
 
-      // Refresh current view
+      // Ekranı güncelle
       Router._onNavigate(Router.current);
       Dashboard._updatePendingBadge();
     } catch (err) {
@@ -174,7 +178,7 @@ const LeaveForm = {
     }
   },
 
-  // ── Detail Modal ─────────────────────────────────────────────
+  // İzin detay modalı
   showDetail(leaveId) {
     const leave = Leaves.byId(leaveId);
     if (!leave) return;
@@ -268,6 +272,7 @@ const LeaveForm = {
     openModal('detailModal');
   },
 
+  // İzni onayla
   async approve(leaveId) {
     if (this._processing) return;
     this._processing = true;
@@ -287,12 +292,14 @@ const LeaveForm = {
     }
   },
 
+  // Reddetme penceresini aç
   openReject(leaveId) {
     this._rejectLeaveId = leaveId;
     document.getElementById('rejectionReasonInput').value = '';
     openModal('rejectModal');
   },
 
+  // Reddetmeyi onayla
   async _confirmReject() {
     if (this._processing) return;
     const reason = document.getElementById('rejectionReasonInput').value.trim();
@@ -315,6 +322,7 @@ const LeaveForm = {
     }
   },
 
+  // İzin talebini iptalet
   async cancel(leaveId) {
     if (!confirm('Bu izin talebini iptal etmek istediğinizden emin misiniz?')) return;
     try {

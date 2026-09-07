@@ -1,7 +1,4 @@
-/* ============================================================
-   telegram.js — Telegram Bot API integration
-   ============================================================ */
-
+// Telegram bildirim servisi
 const Telegram = {
   _lastSent: {},
 
@@ -11,7 +8,7 @@ const Telegram = {
     const cid = String(chatId).trim();
     if (!cid) return false;
 
-    // 3 saniye içinde aynı chat_id'ye birebir aynı mesajın mükerrer gitmesini engelle (deduplication)
+    // Mükerrer bildirimi engelle
     const key = `${cid}_${text.substring(0, 40)}`;
     const now = Date.now();
     if (this._lastSent[key] && (now - this._lastSent[key] < 3000)) {
@@ -23,7 +20,7 @@ const Telegram = {
     const settings = Settings.get();
     const token = settings.telegramBotToken;
     if (!token) {
-      console.warn('[Telegram] Bot token eksik. Lütfen Ayarlar sayfasından Telegram Bot Token kaydedin.');
+      console.warn('[Telegram] Bot token eksik.');
       if (typeof ErrorLogs !== 'undefined' && ErrorLogs.add) {
         ErrorLogs.add('Telegram: Bot token eksik.', `chatId=${cid}`);
       }
@@ -60,10 +57,11 @@ const Telegram = {
     }
   },
 
+  // Yeni izin bildirimi
   async notifyNewLeave(leave) {
     const settings = Settings.get();
     if (!settings.telegramChatId) {
-      console.warn('[Telegram] Admin Chat ID tanımlı değil. Yeni izin bildirimi gönderilemedi.');
+      console.warn('[Telegram] Admin Chat ID tanımlı değil.');
       return;
     }
 
@@ -87,6 +85,7 @@ const Telegram = {
     await this.send(settings.telegramChatId, text);
   },
 
+  // İzin karar bildirimi
   async notifyLeaveDecision(leave) {
     const settings = Settings.get();
     const user = Users.byId(leave.userId);
@@ -110,10 +109,8 @@ const Telegram = {
       (leave.status === 'rejected' && leave.rejectionReason ? `❗ <b>Ret Nedeni:</b> ${leave.rejectionReason}\n` : '') +
       `✍️ <b>İşlem Yapan:</b> ${approver}`;
 
-    // Hedefleri belirle:
-    // 1. Personelin Telegram Chat ID'si varsa personele gönder
+    // Bildirim alıcılarını belirle
     const staffChatId = (user && user.telegramChatId) ? String(user.telegramChatId).trim() : null;
-    // 2. Admin chat ID'si varsa bildirim gönder
     const adminChatId = settings.telegramChatId ? String(settings.telegramChatId).trim() : null;
 
     const targets = new Set();
@@ -121,7 +118,7 @@ const Telegram = {
     if (adminChatId) targets.add(adminChatId);
 
     if (targets.size === 0) {
-      console.warn('[Telegram] Bildirim gönderilecek hedef Chat ID bulunamadı. Lütfen Ayarlar sayfasından Admin Chat ID veya personelin Telegram ID\'sini tanımlayın.');
+      console.warn('[Telegram] Hedef Chat ID bulunamadı.');
       if (typeof ErrorLogs !== 'undefined' && ErrorLogs.add) {
         ErrorLogs.add('Telegram: Hedef Chat ID bulunamadı.', `Personel: ${personName}`);
       }

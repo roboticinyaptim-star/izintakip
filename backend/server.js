@@ -1,19 +1,21 @@
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
+// Ara yazılımlar
 app.use(cors());
 app.use(express.json());
-const path = require('path');
 
-// Frontend dosyalarını (HTML, CSS, JS) sun (Klasör yapısına uygun olarak ../frontend klasöründen)
+// Statik arayüz dosyaları
 app.use(express.static(path.join(__dirname, '../frontend')));
 
-// Routes
+// API rotaları
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
 const companyRoutes = require('./routes/companies');
@@ -26,14 +28,15 @@ app.use('/api/leaves', leaveRoutes);
 
 const initDb = require('./initDb');
 
-// Sunucu başlarken DB tablolarını kontrol et ve hazırla
+// Veritabanını hazırla
 initDb();
 
-// Health Check
+// Sağlık kontrolü
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'İzin Takip Sistemi API çalışıyor.' });
 });
 
+// Sunucuyu başlat
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Sunucu http://localhost:${PORT} adresinde çalışıyor.`);
 });

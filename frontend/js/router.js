@@ -1,7 +1,4 @@
-/* ============================================================
-   router.js — SPA view router + toast
-   ============================================================ */
-
+// Sayfa yönlendirici servisi
 const Router = {
   current: 'dashboard',
 
@@ -16,36 +13,32 @@ const Router = {
   },
 
   navigate(view) {
-    console.log('[Router] navigate:', view, '| isAdmin:', Auth.isAdmin(), '| isSuperAdmin:', Auth.isSuperAdmin());
     const meta = this.views[view];
-    if (!meta) { console.warn('[Router] Bilinmeyen view:', view); return; }
+    if (!meta) return;
 
     // Yetki kontrolü
     if (meta.adminOnly && !Auth.isAdmin()) {
-      console.warn('[Router] Admin yetkisi gerekli:', view);
       return;
     }
     if (meta.superAdminOnly && !Auth.isSuperAdmin()) {
-      console.warn('[Router] SuperAdmin yetkisi gerekli:', view);
       return;
     }
 
-    // Hide all views
+    // Görünümleri gizle
     document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
-    // Show target
+    // Hedef görünümü göster
     const el = document.getElementById('view-' + view);
     if (el) el.classList.add('active');
-    else console.error('[Router] View element bulunamadı: view-' + view);
 
-    // Update nav
+    // Menüyü güncelle
     document.querySelectorAll('.nav-item').forEach(n => {
       n.classList.toggle('active', n.dataset.view === view);
     });
 
-    // Header
+    // Başlığı güncelle
     document.getElementById('headerTitle').textContent = meta.title;
 
-    // Subtitle
+    // Alt başlığı güncelle
     const user = Auth.user();
     let sub = meta.subtitle || '';
     if (view === 'dashboard') {
@@ -62,6 +55,7 @@ const Router = {
     this._onNavigate(view);
   },
 
+  // İlgili görünümü çiz
   _onNavigate(view) {
     try {
       switch (view) {
@@ -78,35 +72,31 @@ const Router = {
     }
   },
 
+  // Yönlendiriciyi başlat
   init() {
-    // Nav click — addEventListener ile (inline onclick zaten var, bu yedek)
     document.querySelectorAll('.nav-item[data-view]').forEach(item => {
       item.addEventListener('click', () => {
-        console.log('[Router] Nav click:', item.dataset.view);
         this.navigate(item.dataset.view);
       });
     });
 
-    // Header date
+    // Güncel tarihi yaz
     const now = new Date();
     document.getElementById('headerDate').textContent =
       now.toLocaleDateString('tr-TR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
-    // Rol tabanlı görünürlük
+    // Rol görünürlük kontrolü
     const role = Auth.user()?.role;
     if (role === 'staff') {
-      // Staff: admin-only öğeleri gizle
       document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
     }
-    // Admin ve superadmin: tüm yetkili öğeler görünür (zaten HTML'de kontrol var)
 
     const startView = Auth.isSuperAdmin() ? 'companies' : 'dashboard';
-    console.log('[Router] init() tamamlandı, başlangıç view:', startView);
     this.navigate(startView);
   }
 };
 
-// ── Toast ─────────────────────────────────────────────────────
+// Bildirim mesaj kutusu
 let _lastToast = { msg: '', time: 0 };
 function toast(message, type = 'info', duration = 3500) {
   const now = Date.now();
@@ -132,7 +122,7 @@ function toast(message, type = 'info', duration = 3500) {
   }, duration);
 }
 
-// ── Modal Helpers ──────────────────────────────────────────────
+// Modal pencere yardımcıları
 function openModal(id) {
   const overlay = document.getElementById(id);
   if (overlay) {
@@ -146,14 +136,14 @@ function closeModal(id) {
   if (overlay) overlay.classList.remove('open');
 }
 
-// Close on backdrop click
+// Dışarı tıklanınca kapat
 document.addEventListener('click', (e) => {
   if (e.target.classList.contains('modal-overlay')) {
     e.target.classList.remove('open');
   }
 });
 
-// Close on Escape
+// Esc tuşuyla kapat
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
     document.querySelectorAll('.modal-overlay.open').forEach(el => el.classList.remove('open'));

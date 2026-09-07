@@ -3,7 +3,7 @@ const db = require('../db');
 const { authenticateToken, requireRole } = require('../middleware/auth');
 const router = express.Router();
 
-// 1. Şirket Ayarlarını Getir (Tüm oturum açmış kullanıcılar)
+// Şirket ayarlarını getir
 router.get('/settings', authenticateToken, async (req, res) => {
   try {
     const [rows] = await db.execute('SELECT telegram_bot_token, telegram_chat_id FROM companies WHERE id = ?', [req.user.companyId]);
@@ -18,7 +18,7 @@ router.get('/settings', authenticateToken, async (req, res) => {
   }
 });
 
-// 2. Şirket Ayarlarını Güncelle (Sadece admin ve superadmin)
+// Şirket ayarlarını güncelle
 router.put('/settings', authenticateToken, requireRole(['admin', 'superadmin']), async (req, res) => {
   try {
     const { telegramBotToken, telegramChatId } = req.body;
@@ -33,12 +33,12 @@ router.put('/settings', authenticateToken, requireRole(['admin', 'superadmin']),
   }
 });
 
-// 3. Tüm şirketleri getir (Sadece superadmin)
+// Tüm şirketleri listele
 router.get('/', authenticateToken, requireRole(['superadmin']), async (req, res) => {
   try {
     const [companies] = await db.execute('SELECT * FROM companies WHERE id != "system" ORDER BY created_at DESC');
     
-    // Her şirket için istatistikleri de çekelim
+    // Şirket istatistiklerini hesapla
     for (let c of companies) {
       const [staff] = await db.execute('SELECT COUNT(*) as cnt FROM users WHERE company_id = ? AND role="staff"', [c.id]);
       const [leaves] = await db.execute('SELECT COUNT(*) as cnt FROM leaves WHERE company_id = ?', [c.id]);
@@ -56,7 +56,7 @@ router.get('/', authenticateToken, requireRole(['superadmin']), async (req, res)
   }
 });
 
-// 4. Şirketi sil (Sadece superadmin)
+// Şirketi sil
 router.delete('/:id', authenticateToken, requireRole(['superadmin']), async (req, res) => {
   try {
     if (req.params.id === 'system') return res.status(400).json({ error: 'Sistem silinemez.' });

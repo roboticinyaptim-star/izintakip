@@ -3,9 +3,11 @@ const bcrypt = require('bcryptjs');
 
 (async () => {
   try {
-    const companyId = 'c_mtm041nwlw0j'; // PTT company ID
+    // Örnek şirket idsi
+    const companyId = 'c_mtm041nwlw0j';
     const passwordHash = await bcrypt.hash('staff123', 10);
     
+    // Örnek personel verileri
     const staffs = [
       { id: 'u_ptt_staff1', name: 'Ahmet Yılmaz', username: 'ahmet', email: 'ahmet@ptt.com', dept: 'Kargo', used: 3 },
       { id: 'u_ptt_staff2', name: 'Ayşe Demir', username: 'ayse', email: 'ayse@ptt.com', dept: 'İnsan Kaynakları', used: 5 },
@@ -13,6 +15,7 @@ const bcrypt = require('bcryptjs');
     ];
 
     for (const s of staffs) {
+      // Personel kaydı oluştur
       await db.execute(
         `INSERT INTO users (id, company_id, username, email, password, role, name, department, leave_total, leave_used, leave_remaining, hourly_total, hourly_used) 
           VALUES (?, ?, ?, ?, ?, 'staff', ?, ?, 14, ?, ?, 16, 0)`,
@@ -20,6 +23,7 @@ const bcrypt = require('bcryptjs');
       );
       console.log('Eklendi personel:', s.name);
       
+      // Örnek izin kaydı
       const leaveId = 'l_' + Date.now() + Math.floor(Math.random()*1000);
       await db.execute(
         `INSERT INTO leaves (id, company_id, user_id, type, leave_type_key, start_date, end_date, duration, description, status)

@@ -1,6 +1,4 @@
-/* ============================================================
-   login.css v4 — Slideshow left + 2-tab right panel
-   ============================================================ */
+/* Giriş sayfası stilleri */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
 
@@ -23,9 +21,7 @@ body {
   min-height: 100vh;
 }
 
-/* ═══════════════════════════════════════════════════════════
-   LEFT — Full-Screen Slideshow
-   ═══════════════════════════════════════════════════════════ */
+/* Sol slayt alanı */
 
 .slide-panel {
   flex: 1;
@@ -51,7 +47,7 @@ body {
   display: block;
 }
 
-/* Overlay gradients */
+/* Karartma katmanı */
 .slide::after {
   content: '';
   position: absolute;
@@ -61,7 +57,7 @@ body {
     linear-gradient(to bottom, rgba(6,14,31,.2) 0%,  transparent 45%,  rgba(6,14,31,.88) 100%);
 }
 
-/* Slide text content */
+/* Slayt metin içeriği */
 .slide-content {
   position: absolute;
   bottom: 0; left: 0; right: 0;
@@ -124,7 +120,7 @@ body {
   line-height: 1.65;
 }
 
-/* Brand logo top-left */
+/* Logo alanı */
 .slide-brand {
   position: absolute;
   top: 38px; left: 52px;
@@ -164,7 +160,7 @@ body {
   letter-spacing: .5px;
 }
 
-/* Dot navigation */
+/* Nokta göstergeleri */
 .slide-dots {
   position: absolute;
   bottom: 30px; right: 36px;
@@ -189,9 +185,7 @@ body {
   box-shadow: 0 0 14px rgba(212,160,23,.7);
 }
 
-/* ═══════════════════════════════════════════════════════════
-   RIGHT — Auth panel  (2 tabs)
-   ═══════════════════════════════════════════════════════════ */
+/* Sağ giriş paneli */
 
 .auth-panel {
   width: 450px;
@@ -214,7 +208,7 @@ body {
   background: linear-gradient(90deg, #0f1f3d 0%, #1a3a6b 35%, #d4a017 65%, #f0c234 100%);
 }
 
-/* Mobile logo */
+/* Mobil logo */
 .auth-logo-mobile {
   display: none;
   align-items: center;
@@ -242,7 +236,7 @@ body {
   line-height: 1.55;
 }
 
-/* ── Tabs ─────────────────────────────────────────────────── */
+/* Sekme butonları */
 .auth-tabs {
   display: flex;
   gap: 4px;
@@ -273,7 +267,7 @@ body {
   box-shadow: 0 2px 12px rgba(15,31,61,.1), 0 0 0 1px rgba(224,232,244,.8);
 }
 
-/* ── Panes ────────────────────────────────────────────────── */
+/* Sekme içerikleri */
 .auth-pane { display: none; }
 
 .auth-pane.active {
@@ -286,7 +280,7 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Forms ────────────────────────────────────────────────── */
+/* Form alanları */
 .form-group { margin-bottom: 15px; }
 
 .form-label {
@@ -347,7 +341,7 @@ body {
 
 .checkbox-label input[type=checkbox] { width: 15px; height: 15px; accent-color: #1a3a6b; }
 
-/* ── Buttons ──────────────────────────────────────────────── */
+/* İşlem butonları */
 .btn-submit {
   width: 100%; padding: 13px;
   background: linear-gradient(135deg, #0a1628 0%, #0f2a55 50%, #1a3a6b 100%);
@@ -374,7 +368,7 @@ body {
 
 .btn-gold:hover { box-shadow: 0 8px 28px rgba(212,160,23,.5) !important; }
 
-/* ── Alerts ───────────────────────────────────────────────── */
+/* Bildirim kutuları */
 .alert-error {
   background: rgba(231,76,60,.07);
   border: 1px solid rgba(231,76,60,.2);
@@ -396,7 +390,7 @@ body {
 
 .alert-success.show { display: block; }
 
-/* ── Divider ─────────────────────────────────────────────── */
+/* Ayırıcı çizgi */
 .auth-divider {
   display: flex; align-items: center; gap: 12px;
   margin: 14px 0; color: #b0bcd4;
@@ -407,7 +401,7 @@ body {
 .auth-divider::before,
 .auth-divider::after { content: ''; flex: 1; height: 1px; background: #e8eef8; }
 
-/* ── Collapsible Firma Kur ─────────────────────────────── */
+/* Firma kurma alanı */
 .new-company-toggle {
   display: flex; align-items: center; justify-content: center;
   gap: 8px; margin-top: 16px; padding: 11px 16px;
@@ -436,11 +430,11 @@ body {
   padding-top: 16px; border-top: 1px solid #edf2f9; margin-top: 14px;
 }
 
-/* ── Staff sub-sections ───────────────────────────────────── */
+/* Alt form bölümleri */
 .staff-subsection { display: none; }
 .staff-subsection.active { display: block; animation: paneIn .3s ease both; }
 
-/* ── Footer ──────────────────────────────────────────────── */
+/* Alt bilgi */
 .auth-footer {
   margin-top: 13px; text-align: center;
   font-size: .75rem; color: #8fa3bd;
@@ -449,7 +443,7 @@ body {
 .auth-footer a { color: #1a3a6b; font-weight: 700; text-decoration: none; cursor: pointer; }
 .auth-footer a:hover { text-decoration: underline; }
 
-/* ── Company code field ────────────────────────────────────── */
+/* Şirket kodu alanı */
 .code-input {
   text-transform: uppercase !important;
   letter-spacing: 3px !important;
@@ -458,7 +452,7 @@ body {
   font-size: .9rem !important;
 }
 
-/* ── Spinner ─────────────────────────────────────────────── */
+/* Yükleniyor animasyonu */
 .spinner {
   width: 16px; height: 16px;
   border: 2px solid rgba(255,255,255,.3);
@@ -470,7 +464,7 @@ body {
 .spinner-dark { border-color: rgba(10,22,40,.2); border-top-color: #0a1628; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── Responsive ───────────────────────────────────────────── */
+/* Mobil uyumluluk */
 @media (max-width: 960px) {
   .slide-panel { display: none; }
   .auth-panel  { width: 100%; padding: 40px 28px; box-shadow: none; padding-top: 60px; }

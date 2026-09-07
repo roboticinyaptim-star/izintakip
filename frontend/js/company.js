@@ -1,8 +1,4 @@
-/* ============================================================
-   company.js — Multi-company management layer
-   Firma kayıt, firma kodu, izolasyon
-   ============================================================ */
-
+// Çoklu şirket servisi
 const DB_COMPANIES = 'izt_companies';
 
 const Companies = {
@@ -15,18 +11,17 @@ const Companies = {
     return Companies.all().find(c => c.id === id) || null;
   },
 
+  // Şirket verilerini sil
   delete(companyId) {
-    // 1. Şirketi sil
     const companies = Companies.all().filter(c => c.id !== companyId);
     Companies.save(companies);
-    // 2. Şirkete ait kullanıcıları sil
     const users = Users.all().filter(u => u.companyId !== companyId);
     Users.save(users);
-    // 3. Şirkete ait izinleri sil
     const leaves = Leaves.all().filter(l => l.companyId !== companyId);
     Leaves.save(leaves);
   },
 
+  // Yeni şirket oluştur
   create(data) {
     const companies = Companies.all();
     const id   = genId('c');
@@ -35,7 +30,7 @@ const Companies = {
       id,
       code,
       name:      data.name,
-      adminId:   null,           // admin oluşturulduktan sonra set edilir
+      adminId:   null,
       createdAt: new Date().toISOString(),
     };
     companies.push(company);
@@ -43,6 +38,7 @@ const Companies = {
     return company;
   },
 
+  // Şirket yöneticisini ata
   setAdmin(companyId, adminId) {
     const companies = Companies.all();
     const idx = companies.findIndex(c => c.id === companyId);
@@ -51,24 +47,22 @@ const Companies = {
     Companies.save(companies);
   },
 
-  /* Firma oluştur + admin hesabını da oluştur (tek işlemde) */
+  // Şirket ve yönetici kaydı
   register(companyName, adminData) {
-    // Şirket adı kontrolü
     const existing = Companies.all().find(c =>
       c.name.toLowerCase() === companyName.toLowerCase()
     );
     if (existing) return { error: 'Bu firma adı zaten kayıtlı.' };
 
-    // Admin e-posta kontrolü (global)
     const existingUser = Users.all().find(u =>
       u.email === adminData.email || u.username === adminData.username
     );
     if (existingUser) return { error: 'Bu e-posta veya kullanıcı adı zaten kullanılıyor.' };
 
-    // 1. Firma oluştur
+    // Şirketi oluştur
     const company = Companies.create({ name: companyName });
 
-    // 2. Admin kullanıcı oluştur
+    // Yönetici hesabı oluştur
     const admin = Users.create({
       companyId:   company.id,
       name:        adminData.name,
@@ -81,7 +75,7 @@ const Companies = {
       hourlyTotal: 0,
     });
 
-    // 3. Firma'ya admin ID'yi bağla
+    // Yöneticiyi şirkete bağla
     Companies.setAdmin(company.id, admin.id);
 
     return { company, admin };

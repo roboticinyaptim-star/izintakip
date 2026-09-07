@@ -1,15 +1,10 @@
-/* ============================================================
-   data.js — Backend API Bridge
-   v3: API Bağlantısı (Node.js & MySQL)
-   ============================================================ */
+// Veri köprüsü — Railway'de otomatik origin, dosyadan açılırsa localhost:3000
+const API_BASE = (window.location.protocol === 'file:')
+  ? 'http://localhost:3000/api'
+  : `${window.location.origin}/api`;
 
-// Dinamik API Base URL: Sayfa nereden açıldıysa (localhost, tünel veya bulut sunucu) orayı kullanır
-const API_BASE = (typeof window !== 'undefined' && window.location.protocol.startsWith('http'))
-  ? `${window.location.origin}/api`
-  : 'http://localhost:3000/api';
-
+// Yerel önbellek
 const DB = {
-  // Local Memory Cache
   companies: [],
   users: [],
   leaves: [],
@@ -17,14 +12,14 @@ const DB = {
   settings: {},
 };
 
-// ── Current Company (set after auth) ──────────────────────────
+// Aktif şirket bilgisi
 const CurrentCompany = {
   _id: null,
   set(id) { this._id = id; },
   get()   { return this._id; },
 };
 
-// ── Generic API Fetcher ─────────────────────────────────────────
+// Sunucu istek fonksiyonu
 async function apiFetch(endpoint, options = {}) {
   const token = sessionStorage.getItem('izt_token') || localStorage.getItem('izt_token');
   const headers = {
@@ -42,6 +37,7 @@ async function apiFetch(endpoint, options = {}) {
   return response.json();
 }
 
+// Kullanıcı modelini dönüştür
 function mapUser(u) {
   return {
     ...u,
@@ -60,13 +56,14 @@ function mapUser(u) {
   };
 }
 
-// ── Initializer (App açılırken tüm datayı çeker) ───────────────
+// Sunucudan verileri yükle
 async function initializeDataFromAPI() {
   const user = JSON.parse(sessionStorage.getItem('izt_user') || localStorage.getItem('izt_user') || 'null');
   if (!user) return false;
 
   CurrentCompany.set(user.companyId);
 
+  // İzin detaylarını birleştir
   const enrichLeaves = (rawLeaves) => {
     return rawLeaves.map(l => {
       const uid = l.user_id || l.userId;
@@ -97,36 +94,33 @@ async function initializeDataFromAPI() {
     });
   };
 
-  // Açık tutalım ki diğer metodlarda (updateStatus, create) da kullanabilelim
   window._enrichLeaves = enrichLeaves;
 
   try {
     if (user.role === 'superadmin') {
-      // Superadmin: şirketler + tüm kullanıcılar
+      // Süper yönetici verileri
       DB.companies = await apiFetch('/companies');
       const usersRaw = await apiFetch('/users');
       DB.users = usersRaw.map(mapUser);
     } else if (user.role === 'admin') {
-      // Admin: kendi şirketinin kullanıcıları + izinleri
+      // Şirket yöneticisi verileri
       const usersRaw = await apiFetch('/users');
       DB.users = usersRaw.map(mapUser);
       const leavesRaw = await apiFetch('/leaves');
       DB.leaves = enrichLeaves(leavesRaw);
     } else {
-      // Staff: kendi profilini ve izinlerini yükler
+      // Personel verileri
       const leavesRaw = await apiFetch('/leaves');
-      // Kendi profil bilgisini (leaveBalance dahil) API'den çek
       try {
         const usersRaw = await apiFetch('/users');
         DB.users = usersRaw.map(mapUser);
       } catch {
-        // Fallback: session'dan temel bilgiyi kullan
         DB.users = [{ ...user, leaveBalance: { total: 0, used: 0, pending: 0, remaining: 0, hourlyTotal: 0, hourlyUsed: 0 } }];
       }
       DB.leaves = enrichLeaves(leavesRaw);
     }
 
-    // Şirket ayarlarını (Telegram vb.) veritabanından çek ve yükle
+    // Şirket ayarlarını yükle
     if (user.companyId && user.companyId !== 'system') {
       try {
         const companySettings = await apiFetch('/companies/settings');
@@ -143,7 +137,7 @@ async function initializeDataFromAPI() {
   }
 }
 
-// ── Users ──────────────────────────────────────────────────────
+// Kullanıcı servis nesnesi
 const Users = {
   all()          { return DB.users; },
   ofCompany(cid) { return DB.users; },
@@ -151,6 +145,7 @@ const Users = {
   staff()        { return Users.active().filter(u => u.role === 'staff'); },
   byId(id)       { return DB.users.find(u => u.id === id) || null; },
   
+  // Yeni personel oluştur
   async create(data) {
     try {
       const res = await apiFetch('/users', {
@@ -166,6 +161,7 @@ const Users = {
     }
   },
 
+  // Personel bilgilerini güncelle
   async update(id, updates) {
     try {
       await apiFetch(`/users/${id}`, { method: 'PUT', body: JSON.stringify(updates) });
@@ -177,10 +173,12 @@ const Users = {
     }
   },
 
+  // Personel durumunu değiştir
   async setActive(id, isActive) {
     return await this.update(id, { isActive });
   },
 
+  // Personeli sil
   async delete(id) {
     try {
       await apiFetch(`/users/${id}`, { method: 'DELETE' });
@@ -199,11 +197,12 @@ const Users = {
   }
 };
 
-// ── Companies ──────────────────────────────────────────────────
+// Şirket servis nesnesi
 const Companies = {
   all()      { return DB.companies; },
   byId(id)   { return DB.companies.find(c => c.id === id) || null; },
   
+  // Şirketi sil
   async delete(id) {
     try {
       await apiFetch(`/companies/${id}`, { method: 'DELETE' });
@@ -214,7 +213,7 @@ const Companies = {
   }
 };
 
-// ── Leaves ─────────────────────────────────────────────────────
+// İzin servis nesnesi
 const Leaves = {
   all()          { return DB.leaves; },
   ofCompany()    { return DB.leaves; },
@@ -223,6 +222,7 @@ const Leaves = {
   pending()      { return DB.leaves.filter(l => l.status === 'pending'); },
   byId(id)       { return DB.leaves.find(l => l.id === id) || null; },
   
+  // İzinleri filtrele
   filter(criteria = {}) {
     let list = this.all() || [];
     if (criteria.userId) {
@@ -247,6 +247,7 @@ const Leaves = {
     return list.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
   },
 
+  // Yeni izin talebi
   async create(data) {
     try {
       const res = await apiFetch('/leaves', {
@@ -262,6 +263,7 @@ const Leaves = {
     }
   },
 
+  // İzin durumunu güncelle
   async updateStatus(id, newStatus, reason = '') {
     try {
       await apiFetch(`/leaves/${id}/status`, {
@@ -277,7 +279,7 @@ const Leaves = {
   }
 };
 
-// ── Leave Types ────────────────────────────────────────────────
+// İzin türleri nesnesi
 const LeaveTypes = {
   _default: [
     { id: 't1', key: 'annual', name: 'Yıllık İzin', requiresApproval: true, isActive: true },
@@ -317,7 +319,7 @@ const LeaveTypes = {
   }
 };
 
-// ── Settings & Logs ────────────────────────────────────────────
+// Ayarlar ve kayıtlar
 const Settings = {
   get() { return JSON.parse(localStorage.getItem('izt_settings') || '{}'); },
   async update(updates, syncBackend = true) { 
@@ -340,6 +342,7 @@ const Settings = {
   }
 };
 
+// Hata kayıtları
 const ErrorLogs = {
   all() { return JSON.parse(localStorage.getItem('izt_logs') || '[]'); },
   save(logs) { localStorage.setItem('izt_logs', JSON.stringify(logs)); },
@@ -355,7 +358,7 @@ const ErrorLogs = {
   }
 };
 
-// ── Expose DB Collections ──────────────────────────────────────
+// Global nesneleri dışaaktar
 window.DB_CACHE = DB;
 window.Users = Users;
 window.Companies = Companies;

@@ -1,13 +1,10 @@
-/* ============================================================
-   İzin Takip ve Onay Sistemi — main.css
-   Global variables, layout, sidebar, header, utilities
-   ============================================================ */
+/* Ana stil tanımları */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-/* ── CSS Variables ──────────────────────────────────────────── */
+/* Değişken tanımları */
 :root {
-  /* Brand */
+  /* Marka renkleri */
   --primary:        #0f1f3d;
   --primary-hover:  #162d56;
   --primary-light:  #1a3a6b;
@@ -15,7 +12,7 @@
   --accent-hover:   #c49010;
   --accent-light:   rgba(212, 160, 23, 0.12);
 
-  /* Semantic */
+  /* Durum renkleri */
   --success:        #1faa6b;
   --success-light:  rgba(31, 170, 107, 0.12);
   --danger:         #e74c3c;
@@ -25,32 +22,32 @@
   --info:           #2980b9;
   --info-light:     rgba(41, 128, 185, 0.12);
 
-  /* Neutral */
+  /* Arka plan renkleri */
   --bg-body:        #eef2f7;
   --bg-card:        #ffffff;
   --bg-hover:       #f4f7fb;
   --border:         #e0e8f4;
   --border-light:   #edf2f9;
 
-  /* Text */
+  /* Metin renkleri */
   --text-primary:   #0d1b2e;
   --text-secondary: #546a8a;
   --text-muted:     #8fa3bd;
   --text-inverse:   #ffffff;
 
-  /* Sidebar */
+  /* Menü renkleri */
   --sidebar-w:      264px;
   --sidebar-bg:     #0f1f3d;
   --sidebar-active: rgba(212, 160, 23, 0.15);
   --sidebar-text:   rgba(255,255,255,0.70);
   --sidebar-hover:  rgba(255,255,255,0.07);
 
-  /* Header */
+  /* Başlık renkleri */
   --header-h:       64px;
   --header-bg:      #ffffff;
   --header-border:  #e0e8f4;
 
-  /* Radius & Shadow */
+  /* Yuvarlama ve gölge */
   --radius-sm:      6px;
   --radius-md:      10px;
   --radius-lg:      16px;
@@ -59,12 +56,12 @@
   --shadow-md:      0 4px 16px rgba(15,31,61,.10);
   --shadow-lg:      0 8px 32px rgba(15,31,61,.14);
 
-  /* Transitions */
+  /* Geçiş efektleri */
   --trans:          all .22s ease;
   --trans-fast:     all .15s ease;
 }
 
-/* ── Reset ──────────────────────────────────────────────────── */
+/* Sayfa sıfırlama */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html { font-size: 15px; scroll-behavior: smooth; }
@@ -83,13 +80,13 @@ img { max-width: 100%; display: block; }
 button { font-family: inherit; cursor: pointer; }
 input, select, textarea { font-family: inherit; }
 
-/* ── App Shell ──────────────────────────────────────────────── */
+/* Uygulama iskeleti */
 #app-shell {
   display: flex;
   min-height: 100vh;
 }
 
-/* ── Sidebar ────────────────────────────────────────────────── */
+/* Yan menü */
 .sidebar {
   width: var(--sidebar-w);
   background: var(--sidebar-bg);
@@ -141,7 +138,7 @@ input, select, textarea { font-family: inherit; }
   letter-spacing: .3px;
 }
 
-/* Nav */
+/* Menü linkleri */
 .sidebar-nav {
   flex: 1;
   padding: 16px 12px;
@@ -214,7 +211,7 @@ input, select, textarea { font-family: inherit; }
   line-height: 1.4;
 }
 
-/* Sidebar Bottom */
+/* Menü alt alanı */
 .sidebar-bottom {
   padding: 16px 12px;
   border-top: 1px solid rgba(255,255,255,.07);
@@ -279,7 +276,7 @@ input, select, textarea { font-family: inherit; }
 
 .sidebar-logout svg { width: 16px; height: 16px; }
 
-/* ── Main Area ──────────────────────────────────────────────── */
+/* Ana içerik alanı */
 .main-area {
   margin-left: var(--sidebar-w);
   flex: 1;
@@ -288,7 +285,7 @@ input, select, textarea { font-family: inherit; }
   min-height: 100vh;
 }
 
-/* ── Header ─────────────────────────────────────────────────── */
+/* Üst başlık alanı */
 .app-header {
   height: var(--header-h);
   background: var(--header-bg);
@@ -340,18 +337,18 @@ input, select, textarea { font-family: inherit; }
 
 .header-date svg { width: 14px; height: 14px; color: var(--text-muted); }
 
-/* ── Content Area ───────────────────────────────────────────── */
+/* İçerik alanı */
 .content-area {
   flex: 1;
   padding: 28px;
   overflow-y: auto;
 }
 
-/* ── Views ──────────────────────────────────────────────────── */
+/* Sayfa görünümleri */
 .view { display: none; }
 .view.active { display: block; }
 
-/* ── Page Header ────────────────────────────────────────────── */
+/* Sayfa başlığı */
 .page-header {
   display: flex;
   align-items: flex-start;
@@ -374,7 +371,7 @@ input, select, textarea { font-family: inherit; }
   margin-top: 3px;
 }
 
-/* ── Cards ──────────────────────────────────────────────────── */
+/* Kart bileşenleri */
 .card {
   background: var(--bg-card);
   border-radius: var(--radius-lg);
@@ -394,7 +391,7 @@ input, select, textarea { font-family: inherit; }
   gap: 8px;
 }
 
-/* ── Stats Grid ─────────────────────────────────────────────── */
+/* İstatistik tablosu */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -475,7 +472,7 @@ input, select, textarea { font-family: inherit; }
   color: var(--text-muted);
 }
 
-/* ── Grid Layouts ───────────────────────────────────────────── */
+/* Sayfa düzeni */
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
 
@@ -493,7 +490,7 @@ input, select, textarea { font-family: inherit; }
   .grid-2, .grid-3 { grid-template-columns: 1fr; }
 }
 
-/* ── Utilities ──────────────────────────────────────────────── */
+/* Yardımcı sınıflar */
 .flex { display: flex; }
 .flex-col { flex-direction: column; }
 .items-center { align-items: center; }
@@ -513,7 +510,7 @@ input, select, textarea { font-family: inherit; }
 .text-secondary { color: var(--text-secondary); }
 .w-full { width: 100%; }
 
-/* ── Empty State ────────────────────────────────────────────── */
+/* Boş durum görünümü */
 .empty-state {
   text-align: center;
   padding: 48px 24px;
@@ -531,20 +528,20 @@ input, select, textarea { font-family: inherit; }
   color: var(--text-secondary);
 }
 
-/* ── Divider ────────────────────────────────────────────────── */
+/* Ayırıcı çizgi */
 .divider {
   height: 1px;
   background: var(--border-light);
   margin: 16px 0;
 }
 
-/* ── Scrollbar ──────────────────────────────────────────────── */
+/* Kaydırma çubuğu */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #c8d6e8; border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: #a0b4cc; }
 
-/* ── Toast Notifications ────────────────────────────────────── */
+/* Bildirim kutuları */
 #toast-container {
   position: fixed;
   bottom: 28px;

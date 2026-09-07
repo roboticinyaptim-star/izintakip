@@ -10,16 +10,16 @@
   <link rel="stylesheet" href="css/premium.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230f1f3d'/><path d='M8 10h16M8 16h10M8 22h13' stroke='%23d4a017' stroke-width='2.5' stroke-linecap='round'/></svg>" />
   <script>
-  /* Oturum kontrolü: token + user bilgisi yoksa login sayfasına yönlendir */
+  // Oturum kontrolü
   (function() {
-    // Eski session key'lerini temizle (migration)
+    // Eski oturumları temizle
     try {
       localStorage.removeItem('izt_session');
       localStorage.removeItem('izt_session_persistent');
       sessionStorage.removeItem('izt_session');
     } catch(e) {}
 
-    // Yeni auth sistemi kontrolü
+    // Oturum anahtarlarını denetle
     const token = sessionStorage.getItem('izt_token') || localStorage.getItem('izt_token');
     const userRaw = sessionStorage.getItem('izt_user') || localStorage.getItem('izt_user');
     if (!token || !userRaw) {
@@ -31,7 +31,7 @@
 <body>
 
 <div id="app-shell">
-  <!-- ── Sidebar ────────────────────────────────────────────── -->
+  <!-- Yan menü -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
       <div class="sidebar-logo-icon">
@@ -71,7 +71,7 @@
         İzin Geçmişi
       </div>
 
-      <!-- Admin Only -->
+      <!-- Yönetici menüsü -->
       <div class="nav-item admin-only hide-superadmin" data-view="approvals" id="nav-approvals" onclick="Router.navigate('approvals')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
@@ -88,7 +88,7 @@
         Raporlama
       </div>
 
-      <!-- SuperAdmin Only: Tüm Şirketler -->
+      <!-- Süper yönetici menüsü -->
       <div class="nav-item superadmin-only" data-view="companies" id="nav-companies" style="display:none" onclick="Router.navigate('companies')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 21h18M3 7v14M21 7v14M6 7V3h12v4M9 11h2M9 15h2M13 11h2M13 15h2"/>
@@ -124,10 +124,10 @@
     </div>
   </aside>
 
-  <!-- ── Main Area ─────────────────────────────────────────── -->
+  <!-- Ana içerik alanı -->
   <div class="main-area">
 
-    <!-- Header -->
+    <!-- Üst çubuk -->
     <header class="app-header">
       <div class="header-left">
         <div class="header-title" id="headerTitle">Dashboard</div>
@@ -150,10 +150,10 @@
       </div>
     </header>
 
-    <!-- Content -->
+    <!-- İçerik alanı -->
     <main class="content-area">
 
-      <!-- ── Dashboard View ──────────────────────────────── -->
+      <!-- Panel görünümü -->
       <section class="view active" id="view-dashboard">
         <div class="page-header">
           <div>
@@ -168,12 +168,12 @@
           </button>
         </div>
 
-        <!-- Staff Stats -->
+        <!-- Personel istatistikleri -->
         <div id="staffStatsSection">
           <div class="stats-grid" id="balanceCards"></div>
         </div>
 
-        <!-- Admin Stats -->
+        <!-- Yönetici istatistikleri -->
         <div id="adminStatsSection" style="display:none">
           <div class="stats-grid" id="adminCards"></div>
         </div>
@@ -194,7 +194,7 @@
         </div>
       </section>
 
-      <!-- ── Calendar View ───────────────────────────────── -->
+      <!-- Takvim görünümü -->
       <section class="view" id="view-calendar">
         <div class="page-header">
           <div>
@@ -229,7 +229,7 @@
         </div>
       </section>
 
-      <!-- ── History View ────────────────────────────────── -->
+      <!-- İzin geçmişi -->
       <section class="view" id="view-history">
         <div class="page-header">
           <div>
@@ -288,7 +288,7 @@
         </div>
       </section>
 
-      <!-- ── Approvals View (Admin) ──────────────────────── -->
+      <!-- İzin onayları -->
       <section class="view" id="view-approvals">
         <div class="page-header">
           <div>
@@ -311,7 +311,7 @@
         <div id="approvalsContent"></div>
       </section>
 
-      <!-- ── Reports View (Admin) ───────────────────────── -->
+      <!-- Raporlama sayfası -->
       <section class="view" id="view-reports">
         <div class="page-header">
           <div>
@@ -396,7 +396,7 @@
         </div>
       </section>
 
-      <!-- ── Settings View ───────────────────────────────── -->
+      <!-- Ayarlar sayfası -->
       <section class="view" id="view-settings">
         <div class="page-header">
           <div>
@@ -407,7 +407,7 @@
         <div id="settingsContent"></div>
       </section>
 
-      <!-- ── All Companies View (SuperAdmin Only) ─────────── -->
+      <!-- Şirketler listesi -->
       <section class="view" id="view-companies">
         <div class="page-header">
           <div>
@@ -416,7 +416,7 @@
           </div>
         </div>
 
-        <!-- Stats Cards -->
+        <!-- İstatistik kartları -->
         <div class="stats-grid" id="companiesStatsGrid">
           <div class="stat-card">
             <div class="stat-icon" style="background:rgba(26,58,107,.1);color:#1a3a6b">
@@ -448,7 +448,7 @@
           </div>
         </div>
 
-        <!-- Filter / Search & Excel Export -->
+        <!-- Arama ve filtreleme -->
         <div class="card" style="margin-bottom:20px;padding:16px 20px">
           <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:space-between">
             <input class="field-input" type="text" id="companySearchInput" placeholder="Şirket adı veya yönetici ara..." style="flex:1;min-width:240px;max-width:400px" />
@@ -463,7 +463,7 @@
           </div>
         </div>
 
-        <!-- Companies Table -->
+        <!-- Şirketler tablosu -->
         <div class="card">
           <div class="table-wrap">
             <table class="data-table">
@@ -488,10 +488,10 @@
   </div>
 </div>
 
-<!-- ── Toast Container ──────────────────────────────────── -->
+<!-- Bildirim kutusu -->
 <div id="toast-container"></div>
 
-<!-- ── Leave Form Modal ──────────────────────────────────── -->
+<!-- İzin talep formu -->
 <div class="modal-overlay" id="leaveModal">
   <div class="modal">
     <div class="modal-header">
@@ -524,7 +524,7 @@
         </button>
       </div>
 
-      <!-- Daily Tab -->
+      <!-- Günlük izin sekmesi -->
       <div class="tab-content active" id="tabContentDaily">
         <div class="field-row">
           <div class="field">
@@ -542,7 +542,7 @@
         </div>
       </div>
 
-      <!-- Hourly Tab -->
+      <!-- Saatlik izin sekmesi -->
       <div class="tab-content" id="tabContentHourly">
         <div class="field">
           <label class="field-label required">Tarih</label>
@@ -564,7 +564,7 @@
         </div>
       </div>
 
-      <!-- Common Fields -->
+      <!-- Ortak form alanları -->
       <div class="field">
         <label class="field-label required">İzin Türü</label>
         <select class="field-select" id="leaveTypeSelect"></select>
@@ -593,7 +593,7 @@
   </div>
 </div>
 
-<!-- ── Leave Detail Modal ────────────────────────────────── -->
+<!-- İzin detayı penceresi -->
 <div class="modal-overlay" id="detailModal">
   <div class="modal modal-sm">
     <div class="modal-header">
@@ -614,7 +614,7 @@
   </div>
 </div>
 
-<!-- ── Company Detail Modal (SuperAdmin) ─────────────────── -->
+<!-- Şirket detay penceresi -->
 <div class="modal-overlay" id="companyDetailModal">
   <div class="modal">
     <div class="modal-header">
@@ -630,7 +630,7 @@
   </div>
 </div>
 
-<!-- ── Rejection Modal ───────────────────────────────────── -->
+<!-- Reddetme penceresi -->
 <div class="modal-overlay" id="rejectModal">
   <div class="modal modal-sm">
     <div class="modal-header">
@@ -667,7 +667,7 @@
   </div>
 </div>
 
-<!-- ── User Form Modal (Admin) ──────────────────────────── -->
+<!-- Personel formu -->
 <div class="modal-overlay" id="userModal">
   <div class="modal">
     <div class="modal-header">
@@ -740,7 +740,7 @@
   </div>
 </div>
 
-<!-- ── Leave Type Modal ──────────────────────────────────── -->
+<!-- İzin türü formu -->
 <div class="modal-overlay" id="leaveTypeModal">
   <div class="modal modal-sm">
     <div class="modal-header">
@@ -765,7 +765,7 @@
   </div>
 </div>
 
-<!-- ── Logout Confirm Overlay ──────────────────────────── -->
+<!-- Çıkış onay penceresi -->
 <div class="modal-overlay" id="logoutOverlay">
   <div class="modal modal-sm">
     <div class="modal-header">
@@ -788,7 +788,7 @@
   </div>
 </div>
 
-<!-- ── Scripts ───────────────────────────────────────────── -->
+<!-- Betik dosyaları -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="js/utils.js"></script>
 <script src="js/auth.js"></script>
@@ -806,9 +806,9 @@
 <script src="js/app.js"></script>
 
 <script>
-/* ── Premium Micro-Interactions ──────────────────────────────── */
+// Arayüz etkileşimleri
 
-// 1. Animated number counter for stat cards
+// Sayaç animasyonu
 function animateCounter(el, target, duration = 800) {
   const isFloat = target % 1 !== 0;
   const start = performance.now();
@@ -819,7 +819,7 @@ function animateCounter(el, target, duration = 800) {
   function tick(now) {
     const elapsed = now - start;
     const progress = Math.min(elapsed / duration, 1);
-    // Ease out cubic
+    // Yumuşak geçiş hesabı
     const eased = 1 - Math.pow(1 - progress, 3);
     const current = from + (target - from) * eased;
     const suffix = el.dataset.suffix || '';
@@ -831,7 +831,7 @@ function animateCounter(el, target, duration = 800) {
   requestAnimationFrame(tick);
 }
 
-// Observe stat cards entering viewport
+// Görünüm gözlemcisi
 function initStatAnimations() {
   const statValues = document.querySelectorAll('.stat-value[data-val]');
   if (!statValues.length) return;
@@ -852,7 +852,7 @@ function initStatAnimations() {
   statValues.forEach(el => observer.observe(el));
 }
 
-// 2. Staggered stat card entrance animation
+// Kademeli kart animasyonu
 function animateStatCards() {
   const cards = document.querySelectorAll('.stat-card');
   cards.forEach((card, i) => {
@@ -867,7 +867,7 @@ function animateStatCards() {
   });
 }
 
-// 3. Hook into router view changes
+// Görünüm değişim kancası
 const _origShowView = window.showView;
 if (typeof _origShowView === 'function') {
   window.showView = function(viewId) {
@@ -879,8 +879,8 @@ if (typeof _origShowView === 'function') {
   };
 }
 
-// Observer kaldırıldı (Infinite loop'a sebep oluyordu)
-// 5. Sidebar nav item click — ripple effect
+// Sonsuz döngü engellendi
+// Dalgalanma efekti
 document.querySelectorAll('.nav-item').forEach(item => {
   item.addEventListener('click', function(e) {
     const ripple = document.createElement('span');
@@ -908,7 +908,7 @@ document.querySelectorAll('.nav-item').forEach(item => {
   });
 });
 
-// 6. Initial run
+// İlk çalıştırma
 setTimeout(() => {
   animateStatCards();
   initStatAnimations();

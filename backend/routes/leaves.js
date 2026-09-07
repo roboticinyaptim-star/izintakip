@@ -5,13 +5,13 @@ const router = express.Router();
 
 router.use(authenticateToken);
 
-// 1. Şirketin tüm izinlerini getir
+// İzin kayıtlarını getir
 router.get('/', async (req, res) => {
   try {
     let query = 'SELECT * FROM leaves WHERE company_id = ? ORDER BY created_at DESC';
     let params = [req.user.companyId];
 
-    // Personel ise sadece kendi izinlerini görebilir
+    // Personel kendi izinlerini görür
     if (req.user.role === 'staff') {
       query = 'SELECT * FROM leaves WHERE company_id = ? AND user_id = ? ORDER BY created_at DESC';
       params = [req.user.companyId, req.user.id];
@@ -25,7 +25,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// 2. Yeni İzin Talebi Oluştur
+// Yeni izin talebi
 router.post('/', async (req, res) => {
   try {
     const { type, leaveTypeKey, startDate, endDate, startTime, endTime, duration, description } = req.body;
@@ -52,7 +52,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// 3. İzin Durumunu Güncelle (Onayla / Reddet)
+// İzin durumunu güncelle
 router.patch('/:id/status', async (req, res) => {
   try {
     if (req.user.role !== 'admin' && req.user.role !== 'superadmin') return res.status(403).json({ error: 'Sadece yönetici onaylayabilir.' });

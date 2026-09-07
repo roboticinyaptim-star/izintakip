@@ -1,7 +1,4 @@
-/* ============================================================
-   history.js — Leave history table (Personal records + Excel)
-   ============================================================ */
-
+// İzin geçmişi modülü
 const History = {
   _page: 1,
   _perPage: 10,
@@ -13,8 +10,8 @@ const History = {
     this._applyFilters();
   },
 
+  // İzin türleri filtresi
   _populateFilters() {
-    // Leave types
     const typeSelect = document.getElementById('historyTypeFilter');
     if (typeSelect) {
       const types = LeaveTypes.all();
@@ -32,7 +29,7 @@ const History = {
     const status = statusInput ? statusInput.value : '';
     const type   = typeInput   ? typeInput.value : '';
 
-    // Her kullanıcı (Yönetici dahil) sadece kendi izinlerini görür!
+    // Sadece kendi izinleri
     const currentUserId = Auth.userId();
     let results = Leaves.byUser(currentUserId).sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
 
@@ -49,6 +46,7 @@ const History = {
     this._renderPagination();
   },
 
+  // Tabloyu çiz
   _renderTable() {
     const start = (this._page - 1) * this._perPage;
     const page  = this._filtered.slice(start, start + this._perPage);
@@ -86,6 +84,7 @@ const History = {
     `).join('');
   },
 
+  // Sayfalama kontrollerini çiz
   _renderPagination() {
     const total = this._filtered.length;
     const pages = Math.ceil(total / this._perPage);
@@ -113,6 +112,7 @@ const History = {
     this._renderPagination();
   },
 
+  // Excel olarak aktar
   exportExcel() {
     if (this._exporting) return;
     this._exporting = true;
@@ -145,7 +145,7 @@ const History = {
     const safeName = (u?.name || 'Kullanici').replace(/[^a-zA-Z0-9ığüşöçİĞÜŞÖÇ_]/g, '_');
     const fileName = `izin-gecmisi-${safeName}-${dateStr}`;
 
-    // 1. SheetJS (.xlsx)
+    // SheetJS excel dışaaktarımı
     if (typeof XLSX !== 'undefined' && XLSX.utils) {
       try {
         const ws = XLSX.utils.json_to_sheet(rows);
@@ -161,7 +161,7 @@ const History = {
       }
     }
 
-    // 2. Native Fallback (.xls)
+    // Temel excel dışaaktarımı
     try {
       const headers = Object.keys(rows[0]);
       let tableHtml = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
@@ -190,6 +190,7 @@ const History = {
     }
   },
 
+  // Olay dinleyicileri bağla
   init() {
     const searchEl = document.getElementById('historySearch');
     if (searchEl) searchEl.addEventListener('input', () => { this._page = 1; this._applyFilters(); });

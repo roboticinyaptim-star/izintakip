@@ -1,41 +1,37 @@
-/* ============================================================
-   İzin Takip — premium.css
-   Premium upgrade: micro-animations, glassmorphism, glow
-   effects, animated counters, particle bg, elevated UI
-   ============================================================ */
+/* Gelişmiş görsel efektler */
 
-/* ── Premium Font Upgrade ────────────────────────────────────── */
+/* Yazı tipi tanımları */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
-/* Override to Plus Jakarta Sans for a premium feel */
+/* Başlık yazı tipleri */
 :root {
   --font-display: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
   --font-body:    'Inter', system-ui, sans-serif;
 
-  /* Premium color tokens */
+  /* Parlama renkleri */
   --glow-primary:   rgba(15, 31, 61, 0.4);
   --glow-accent:    rgba(212, 160, 23, 0.35);
   --glow-success:   rgba(31, 170, 107, 0.3);
   --glow-danger:    rgba(231, 76, 60, 0.3);
 
-  /* Glass */
+  /* Cam efekti değişkenleri */
   --glass-bg:       rgba(255, 255, 255, 0.07);
   --glass-border:   rgba(255, 255, 255, 0.13);
   --glass-blur:     blur(16px);
 
-  /* Premium Gradients */
+  /* Renk geçişleri */
   --grad-sidebar:   linear-gradient(160deg, #0a1628 0%, #0f1f3d 40%, #122240 100%);
   --grad-accent:    linear-gradient(135deg, #d4a017 0%, #f0c234 50%, #e8b620 100%);
   --grad-hero:      linear-gradient(135deg, #0a1628 0%, #0f2a55 50%, #0d2040 100%);
   --grad-card-hover: linear-gradient(135deg, rgba(212,160,23,.06), rgba(26,58,107,.08));
 
-  /* Easing */
+  /* Animasyon ivmeleri */
   --ease-spring:    cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-smooth:    cubic-bezier(0.4, 0, 0.2, 1);
   --ease-out:       cubic-bezier(0, 0, 0.2, 1);
 }
 
-/* ── Font Assignments ────────────────────────────────────────── */
+/* Yazı tipi atamaları */
 body {
   font-family: var(--font-body);
 }
@@ -51,13 +47,10 @@ body {
   font-family: var(--font-display);
 }
 
-/* ══════════════════════════════════════════════════════════════
-   LOGIN PAGE — handled by login.css directly; premium
-   overrides below are for app.html only
-   ══════════════════════════════════════════════════════════════ */
+/* Giriş sayfası efektleri */
 
 
-/* Premium hero title */
+/* Başlık efekti */
 .login-hero-title {
   font-size: 3rem !important;
   font-weight: 900 !important;
@@ -78,7 +71,7 @@ body {
   filter: drop-shadow(0 0 20px rgba(212,160,23,.4));
 }
 
-/* Feature items upgrade */
+/* Özellik kutuları */
 .login-feature {
   padding: 8px 14px;
   background: rgba(255,255,255,.04);
@@ -111,7 +104,7 @@ body {
   50%       { box-shadow: 0 0 16px rgba(212,160,23,.9), 0 0 4px rgba(212,160,23,1); }
 }
 
-/* Brand icon upgrade */
+/* Logo simgesi */
 .brand-icon {
   background: var(--grad-accent) !important;
   box-shadow: 0 8px 32px rgba(212,160,23,.45), 0 0 0 1px rgba(255,255,255,.1) !important;
@@ -123,7 +116,7 @@ body {
   50%       { box-shadow: 0 8px 48px rgba(212,160,23,.65), 0 0 0 1px rgba(255,255,255,.15); }
 }
 
-/* Login card — premium glassmorphism */
+/* Giriş kartı efekti */
 .login-card {
   background: rgba(255, 255, 255, 0.96) !important;
   border: 1px solid rgba(255, 255, 255, 0.9) !important;
@@ -140,7 +133,7 @@ body {
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
-/* Login form input — upgrade */
+/* Giriş girdi kutusu */
 .form-input {
   background: #f6f9fd !important;
   border: 1.5px solid #dce6f4 !important;
@@ -154,7 +147,7 @@ body {
   transform: translateY(-1px);
 }
 
-/* Login button — premium */
+/* Giriş butonu efekti */
 .btn-login {
   background: linear-gradient(135deg, #0a1628 0%, #0f2a55 50%, #1a3a6b 100%) !important;
   box-shadow: 0 4px 24px rgba(15,31,61,.35) !important;
@@ -172,7 +165,7 @@ body {
   transform: translateY(0) scale(0.99) !important;
 }
 
-/* Demo badge upgrade */
+/* Deneme rozetleri */
 .demo-badge {
   background: linear-gradient(135deg, rgba(26,58,107,.06), rgba(26,58,107,.03)) !important;
   border: 1px solid rgba(26,58,107,.15) !important;
@@ -189,16 +182,14 @@ body {
   transform: translateX(3px);
 }
 
-/* ══════════════════════════════════════════════════════════════
-   SIDEBAR PREMIUM UPGRADES
-   ══════════════════════════════════════════════════════════════ */
+/* Yan menü efektleri */
 
 .sidebar {
   background: var(--grad-sidebar) !important;
   border-right: 1px solid rgba(255,255,255,.04);
 }
 
-/* Sidebar glow at top */
+/* Menü tepe parlaması */
 .sidebar::before {
   content: '';
   position: absolute;
@@ -217,7 +208,7 @@ body {
   position: relative;
 }
 
-/* Logo icon upgrade */
+/* Menü logosu efekti */
 .sidebar-logo-icon {
   background: var(--grad-accent) !important;
   box-shadow: 0 4px 16px rgba(212,160,23,.35), 0 0 0 1px rgba(255,255,255,.1) !important;
@@ -236,7 +227,7 @@ body {
   letter-spacing: .3px !important;
 }
 
-/* Nav items upgrade */
+/* Menü butonları */
 .nav-item {
   border-radius: 10px !important;
   transition: all .2s var(--ease-smooth) !important;
@@ -275,7 +266,7 @@ body {
   50%       { box-shadow: 0 0 0 4px rgba(231,76,60,0); }
 }
 
-/* Sidebar user */
+/* Kullanıcı kutusu */
 .sidebar-avatar {
   background: var(--grad-accent) !important;
   color: #0a1628 !important;
@@ -293,9 +284,7 @@ body {
   transform: translateX(2px);
 }
 
-/* ══════════════════════════════════════════════════════════════
-   HEADER PREMIUM UPGRADES
-   ══════════════════════════════════════════════════════════════ */
+/* Üst başlık efektleri */
 
 .app-header {
   background: rgba(255,255,255,.92) !important;
@@ -327,7 +316,7 @@ body {
   box-shadow: 0 3px 10px rgba(15,31,61,.1) !important;
 }
 
-/* New leave btn glow */
+/* İzin butonu efekti */
 #newLeaveBtn {
   background: var(--grad-accent) !important;
   box-shadow: 0 4px 16px rgba(212,160,23,.35) !important;
@@ -345,9 +334,7 @@ body {
   transform: scale(0.98) !important;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   STAT CARDS PREMIUM UPGRADES
-   ══════════════════════════════════════════════════════════════ */
+/* İstatistik kartı efektleri */
 
 .stat-card {
   border: 1px solid rgba(224,232,244,.6) !important;
@@ -356,7 +343,7 @@ body {
   position: relative;
 }
 
-/* Animated shine effect on hover */
+/* Kart parlama animasyonu */
 .stat-card::before {
   content: '';
   position: absolute;
@@ -417,9 +404,7 @@ body {
   transform: scale(1.12) rotate(-4deg);
 }
 
-/* ══════════════════════════════════════════════════════════════
-   CARDS GENERAL PREMIUM UPGRADES
-   ══════════════════════════════════════════════════════════════ */
+/* Kart tasarımı */
 
 .card {
   border: 1px solid rgba(224,232,244,.7) !important;
@@ -436,9 +421,7 @@ body {
   font-weight: 700 !important;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   BUTTONS PREMIUM UPGRADES
-   ══════════════════════════════════════════════════════════════ */
+/* Buton efektleri */
 
 .btn {
   font-family: var(--font-display) !important;
@@ -483,9 +466,7 @@ body {
   transform: translateY(-2px) !important;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   BADGES UPGRADE
-   ══════════════════════════════════════════════════════════════ */
+/* Durum rozetleri */
 
 .badge {
   font-family: var(--font-display) !important;
@@ -498,9 +479,7 @@ body {
 .badge-approved { box-shadow: inset 0 0 0 1px rgba(31,170,107,.2); }
 .badge-rejected { box-shadow: inset 0 0 0 1px rgba(231,76,60,.2);  }
 
-/* ══════════════════════════════════════════════════════════════
-   TABLE PREMIUM UPGRADES
-   ══════════════════════════════════════════════════════════════ */
+/* Tablo tasarımı */
 
 .data-table thead {
   background: linear-gradient(to bottom, #f5f8ff, #edf2fb) !important;
@@ -521,9 +500,7 @@ body {
   background: linear-gradient(135deg, rgba(26,58,107,.03), rgba(212,160,23,.02)) !important;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   MODAL PREMIUM UPGRADES
-   ══════════════════════════════════════════════════════════════ */
+/* Açılır pencere efektleri */
 
 .modal {
   box-shadow:
@@ -541,9 +518,7 @@ body {
   font-weight: 700 !important;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   LEAVE ITEMS PREMIUM
-   ══════════════════════════════════════════════════════════════ */
+/* İzin satırları */
 
 .leave-item {
   transition: all .22s var(--ease-spring) !important;
@@ -561,9 +536,7 @@ body {
   box-shadow: 0 2px 8px rgba(15,31,61,.2) !important;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   CALENDAR PREMIUM UPGRADES
-   ══════════════════════════════════════════════════════════════ */
+/* Takvim görünümü */
 
 .cal-day {
   transition: all .15s var(--ease-smooth) !important;
@@ -593,9 +566,7 @@ body {
   transform: scale(1.08) !important;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   APPROVAL CARD PREMIUM
-   ══════════════════════════════════════════════════════════════ */
+/* Onay kartı tasarımı */
 
 .approval-card {
   transition: all .22s var(--ease-spring) !important;
@@ -607,9 +578,7 @@ body {
   box-shadow: 0 8px 28px rgba(15,31,61,.12) !important;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   TOAST PREMIUM UPGRADE
-   ══════════════════════════════════════════════════════════════ */
+/* Bildirim kutusu */
 
 .toast {
   background: linear-gradient(135deg, #0a1628, #0f2a55) !important;
@@ -619,9 +588,7 @@ body {
   backdrop-filter: blur(20px) !important;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   PAGE TRANSITIONS
-   ══════════════════════════════════════════════════════════════ */
+/* Sayfa geçiş animasyonu */
 
 .view.active {
   animation: viewFadeIn .3s var(--ease-out) both;
@@ -632,9 +599,7 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ══════════════════════════════════════════════════════════════
-   COUNTER ANIMATION
-   ══════════════════════════════════════════════════════════════ */
+/* Sayaç animasyonu */
 
 .stat-value.counting {
   animation: countPop .4s var(--ease-spring);
@@ -646,9 +611,7 @@ body {
   100% { transform: scale(1); }
 }
 
-/* ══════════════════════════════════════════════════════════════
-   TABS PREMIUM
-   ══════════════════════════════════════════════════════════════ */
+/* Sekme tasarımı */
 
 .tabs {
   background: linear-gradient(135deg, #eef2f7, #e6eef8) !important;
@@ -666,9 +629,7 @@ body {
   color: var(--primary) !important;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   SCROLLBAR PREMIUM
-   ══════════════════════════════════════════════════════════════ */
+/* Kaydırma çubuğu tasarımı */
 
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -680,27 +641,21 @@ body {
   background: linear-gradient(180deg, #a0b4cc, #7a95b8);
 }
 
-/* ══════════════════════════════════════════════════════════════
-   SELECTION COLOR
-   ══════════════════════════════════════════════════════════════ */
+/* Metin seçim rengi */
 
 ::selection {
   background: rgba(212,160,23,.25);
   color: #0d1b2e;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   FOCUS VISIBLE
-   ══════════════════════════════════════════════════════════════ */
+/* Odaklanma çerçevesi */
 
 *:focus-visible {
   outline: 2px solid rgba(212,160,23,.7);
   outline-offset: 2px;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   USER CARD UPGRADE
-   ══════════════════════════════════════════════════════════════ */
+/* Kullanıcı kartı tasarımı */
 
 .user-card {
   transition: all .22s var(--ease-spring) !important;
@@ -717,9 +672,7 @@ body {
   box-shadow: 0 2px 10px rgba(15,31,61,.2) !important;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   PAGE HEADER PREMIUM
-   ══════════════════════════════════════════════════════════════ */
+/* Sayfa başlığı tasarımı */
 
 .page-title {
   font-family: var(--font-display) !important;
@@ -732,9 +685,7 @@ body {
   background-clip: text;
 }
 
-/* ══════════════════════════════════════════════════════════════
-   MOBILE
-   ══════════════════════════════════════════════════════════════ */
+/* Mobil görünüm kuralları */
 
 @media (max-width: 768px) {
   .sidebar {

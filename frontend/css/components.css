@@ -1,9 +1,6 @@
-/* ============================================================
-   İzin Takip ve Onay Sistemi — components.css
-   Buttons, badges, modals, tables, forms, tabs, filters
-   ============================================================ */
+/* Arayüz bileşen stilleri */
 
-/* ── Buttons ────────────────────────────────────────────────── */
+/* Buton stilleri */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -116,7 +113,7 @@
   transform: none !important;
 }
 
-/* ── Badges ─────────────────────────────────────────────────── */
+/* Rozet stilleri */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -144,7 +141,7 @@
 .badge-admin    { background: rgba(26,58,107,.12);   color: #1a3a6b; }
 .badge-staff    { background: rgba(41,128,185,.12);  color: #2471a3; }
 
-/* ── Modal ──────────────────────────────────────────────────── */
+/* Açılır pencere stilleri */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -235,7 +232,7 @@
   gap: 10px;
 }
 
-/* ── Form Styles (App) ──────────────────────────────────────── */
+/* Form elemanı stilleri */
 .field {
   margin-bottom: 18px;
 }
@@ -311,7 +308,7 @@
 
 .field.has-error .field-error { display: block; }
 
-/* Duration Display */
+/* Süre göstergesi */
 .duration-display {
   background: linear-gradient(135deg, rgba(26,58,107,.07), rgba(26,58,107,.04));
   border: 1px solid rgba(26,58,107,.15);
@@ -335,7 +332,7 @@
   color: var(--primary-light);
 }
 
-/* ── Tabs ───────────────────────────────────────────────────── */
+/* Sekme stilleri */
 .tabs {
   display: flex;
   gap: 2px;
@@ -373,7 +370,7 @@
 .tab-content { display: none; }
 .tab-content.active { display: block; }
 
-/* ── Table ──────────────────────────────────────────────────── */
+/* Tablo stilleri */
 .table-wrap {
   overflow-x: auto;
   border-radius: var(--radius-lg);
@@ -428,7 +425,7 @@
   gap: 6px;
 }
 
-/* ── Filter Bar ─────────────────────────────────────────────── */
+/* Filtreleme çubuğu */
 .filter-bar {
   display: flex;
   align-items: center;
@@ -463,7 +460,7 @@
 
 .filter-search .field-input { padding-left: 34px; }
 
-/* ── Leave Request Item ─────────────────────────────────────── */
+/* İzin talep satırı */
 .leave-item {
   display: flex;
   align-items: center;
@@ -499,7 +496,7 @@
 .leave-item-right { display: flex; align-items: center; gap: 10px; }
 .leave-item-duration { font-size: .8rem; font-weight: 600; color: var(--text-secondary); }
 
-/* ── Calendar ───────────────────────────────────────────────── */
+/* Takvim stilleri */
 .calendar-wrap {
   background: var(--bg-card);
   border-radius: var(--radius-lg);
@@ -651,7 +648,7 @@
 .cal-legend-dot.rejected { background: rgba(231,76,60,.5); }
 .cal-legend-dot.cancelled{ background: rgba(100,116,139,.4); }
 
-/* ── Detail Info Rows ───────────────────────────────────────── */
+/* Detay bilgi satırları */
 .detail-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -678,7 +675,7 @@
   color: var(--text-primary);
 }
 
-/* ── User Card (Settings) ───────────────────────────────────── */
+/* Kullanıcı kartı */
 .user-card {
   display: flex;
   align-items: center;
@@ -717,7 +714,7 @@
 
 .inactive-user { opacity: .55; }
 
-/* ── Section Divider ────────────────────────────────────────── */
+/* Bölüm ayırıcı */
 .section-divider {
   display: flex;
   align-items: center;
@@ -738,7 +735,7 @@
   background: var(--border-light);
 }
 
-/* ── Approval Card ──────────────────────────────────────────── */
+/* Onay kartı */
 .approval-card {
   background: var(--bg-card);
   border: 1px solid var(--border-light);
@@ -767,7 +764,7 @@
   flex-shrink: 0;
 }
 
-/* ── Progress Bar ───────────────────────────────────────────── */
+/* İlerleme çubuğu */
 .progress-bar {
   height: 6px;
   background: var(--bg-body);
@@ -783,7 +780,7 @@
   transition: width .5s ease;
 }
 
-/* ── Rejection Reason ───────────────────────────────────────── */
+/* Reddetme nedeni */
 .rejection-box {
   background: var(--danger-light);
   border: 1px solid rgba(231,76,60,.2);
@@ -806,7 +803,7 @@
   color: #c0392b;
 }
 
-/* ── Spinner ────────────────────────────────────────────────── */
+/* Yükleme animasyonu */
 .spinner {
   width: 20px; height: 20px;
   border: 2.5px solid rgba(255,255,255,.3);
@@ -818,7 +815,7 @@
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── Pagination ─────────────────────────────────────────────── */
+/* Sayfalama düğmeleri */
 .pagination {
   display: flex;
   align-items: center;
@@ -853,7 +850,7 @@
   border-color: var(--primary);
 }
 
-/* ── Telegram Settings ──────────────────────────────────────── */
+/* Telegram ayarları */
 .telegram-section {
   background: linear-gradient(135deg, rgba(41,128,185,.06), rgba(41,128,185,.03));
   border: 1px solid rgba(41,128,185,.2);
@@ -882,7 +879,7 @@
 .telegram-title { font-size: .88rem; font-weight: 700; color: var(--text-primary); }
 .telegram-sub { font-size: .73rem; color: var(--text-secondary); }
 
-/* ── Report filters ─────────────────────────────────────────── */
+/* Rapor filtreleri */
 .report-filters {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -890,7 +887,7 @@
   margin-bottom: 20px;
 }
 
-/* ── Status Timeline ────────────────────────────────────────── */
+/* Durum zaman çizelgesi */
 .timeline {
   position: relative;
   padding-left: 20px;

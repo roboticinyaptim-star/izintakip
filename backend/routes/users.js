@@ -4,7 +4,7 @@ const db = require('../db');
 const { authenticateToken, requireRole } = require('../middleware/auth');
 const router = express.Router();
 
-// 1. Kullanıcıları getir (role-based)
+// Kullanıcıları listele
 router.get('/', authenticateToken, async (req, res) => {
   try {
     let rows;
@@ -13,7 +13,7 @@ router.get('/', authenticateToken, async (req, res) => {
     } else if (req.user.role === 'admin') {
       [rows] = await db.execute('SELECT * FROM users WHERE company_id = ? ORDER BY created_at DESC', [req.user.companyId]);
     } else {
-      // Staff kendi profilini görür
+      // Personel kendi profilini görür
       [rows] = await db.execute('SELECT * FROM users WHERE id = ?', [req.user.id]);
     }
 
@@ -29,7 +29,7 @@ router.get('/', authenticateToken, async (req, res) => {
   }
 });
 
-// 2. Yeni kullanıcı ekle
+// Yeni kullanıcı ekle
 router.post('/', authenticateToken, requireRole(['admin']), async (req, res) => {
   try {
     const { name, department, username, email, password, role, telegramChatId, leaveTotal, hourlyTotal } = req.body;
@@ -77,12 +77,12 @@ router.post('/', authenticateToken, requireRole(['admin']), async (req, res) => 
   }
 });
 
-// 3. Kullanıcı güncelle
+// Kullanıcı bilgilerini güncelle
 router.put('/:id', authenticateToken, async (req, res) => {
   try {
     const targetId = req.params.id;
 
-    // Yetki kontrolü: admin kendi şirketindekini güncelleyebilir, staff sadece kendini
+    // Yetki kontrolü
     if (req.user.role === 'staff' && req.user.id !== targetId) {
       return res.status(403).json({ error: 'Yetkiniz yok.' });
     }
@@ -96,7 +96,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
 
     const { name, department, email, username, password, role, telegramChatId, leaveTotal, hourlyTotal, isActive } = req.body;
 
-    // Güncelleme alanlarını oluştur
+    // Güncellenecek alanları topla
     const fields = [];
     const values = [];
 
@@ -107,7 +107,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
     if (telegramChatId !== undefined) { fields.push('telegram_chat_id = ?'); values.push(telegramChatId); }
     if (isActive    !== undefined) { fields.push('is_active = ?');         values.push(isActive ? 1 : 0); }
 
-    // Sadece admin izin haklarını değiştirebilir
+    // Yönetici hak kontrolleri
     if (req.user.role !== 'staff') {
       if (role        !== undefined) { fields.push('role = ?');              values.push(role); }
       if (leaveTotal  !== undefined) {
@@ -118,7 +118,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
       if (hourlyTotal !== undefined) { fields.push('hourly_total = ?');    values.push(parseInt(hourlyTotal)); }
     }
 
-    // Şifre güncelleme
+    // Şifreyi güncelle
     if (password && password.length >= 6) {
       const salt = await bcrypt.genSalt(10);
       const hashed = await bcrypt.hash(password, salt);
@@ -138,7 +138,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
   }
 });
 
-// 4. Kullanıcı sil
+// Kullanıcıyı sil
 router.delete('/:id', authenticateToken, requireRole(['admin', 'superadmin']), async (req, res) => {
   try {
     const [userRows] = await db.execute('SELECT company_id FROM users WHERE id = ?', [req.params.id]);

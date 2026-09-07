@@ -2,7 +2,7 @@ const db = require('./db');
 
 async function initDb() {
   try {
-    // 1. Şirketler (Kurumlar)
+    // Şirketler tablosu
     await db.execute(`
       CREATE TABLE IF NOT EXISTS companies (
         id VARCHAR(50) PRIMARY KEY,
@@ -15,7 +15,7 @@ async function initDb() {
       )
     `);
 
-    // 2. Kullanıcılar (Personeller ve Yöneticiler)
+    // Kullanıcılar tablosu
     await db.execute(`
       CREATE TABLE IF NOT EXISTS users (
         id VARCHAR(50) PRIMARY KEY,
@@ -40,7 +40,7 @@ async function initDb() {
       )
     `);
 
-    // 3. İzin Türleri (Kuruma Özel)
+    // İzin türleri tablosu
     await db.execute(`
       CREATE TABLE IF NOT EXISTS leave_types (
         id VARCHAR(50) PRIMARY KEY,
@@ -56,7 +56,7 @@ async function initDb() {
       )
     `);
 
-    // 4. İzin Talepleri
+    // İzin talepleri tablosu
     await db.execute(`
       CREATE TABLE IF NOT EXISTS leaves (
         id VARCHAR(50) PRIMARY KEY,
@@ -81,13 +81,13 @@ async function initDb() {
       )
     `);
 
-    // 5. Varsayılan System Şirketi
+    // Sistem şirketi ekle
     await db.execute(`
       INSERT IGNORE INTO companies (id, code, name, admin_id) 
       VALUES ('system', 'SYS', 'Sistem Yönetimi', 'u_superadmin')
     `);
 
-    // 6. Varsayılan Super Admin
+    // Sistem yöneticisi ekle
     await db.execute(`
       INSERT IGNORE INTO users (id, company_id, username, email, password, role, name, department, is_active)
       VALUES (

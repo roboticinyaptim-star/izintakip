@@ -1,7 +1,10 @@
+const path = require('path');
 const mysql = require('mysql2/promise');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
 require('dotenv').config();
 
-// Railway veya yerel ortam bağlantı ayarları
+// Veritabanı bağlantı ayarları
 const connectionConfig = process.env.MYSQL_URL || process.env.DATABASE_URL
   ? (process.env.MYSQL_URL || process.env.DATABASE_URL)
   : {
@@ -19,7 +22,7 @@ const pool = typeof connectionConfig === 'string'
   ? mysql.createPool(connectionConfig)
   : mysql.createPool(connectionConfig);
 
-// Test connection
+// Bağlantıyı test et
 pool.getConnection()
   .then(conn => {
     console.log('MySQL veritabanına başarıyla bağlanıldı.');
