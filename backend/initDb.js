@@ -4,102 +4,108 @@ async function initDb() {
   try {
     // Şirketler tablosu
     await db.execute(`
-      CREATE TABLE IF NOT EXISTS companies (
-        id VARCHAR(50) PRIMARY KEY,
-        code VARCHAR(50) UNIQUE,
-        name VARCHAR(150) NOT NULL,
-        admin_id VARCHAR(50),
-        telegram_bot_token VARCHAR(255),
-        telegram_chat_id VARCHAR(100),
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='companies' AND xtype='U')
+      CREATE TABLE companies (
+        id NVARCHAR(50) PRIMARY KEY,
+        code NVARCHAR(50) UNIQUE,
+        name NVARCHAR(150) NOT NULL,
+        admin_id NVARCHAR(50),
+        telegram_bot_token NVARCHAR(255),
+        telegram_chat_id NVARCHAR(100),
+        created_at DATETIME DEFAULT GETDATE()
       )
     `);
 
     // Kullanıcılar tablosu
     await db.execute(`
-      CREATE TABLE IF NOT EXISTS users (
-        id VARCHAR(50) PRIMARY KEY,
-        company_id VARCHAR(50) NOT NULL,
-        username VARCHAR(100) NOT NULL,
-        email VARCHAR(150) NOT NULL,
-        password VARCHAR(255) NOT NULL,
-        role ENUM('superadmin', 'admin', 'staff') NOT NULL DEFAULT 'staff',
-        name VARCHAR(150) NOT NULL,
-        department VARCHAR(100),
-        telegram_chat_id VARCHAR(50),
-        is_active BOOLEAN DEFAULT TRUE,
-        is_registered BOOLEAN DEFAULT TRUE,
+      IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='users' AND xtype='U')
+      CREATE TABLE users (
+        id NVARCHAR(50) PRIMARY KEY,
+        company_id NVARCHAR(50) NOT NULL,
+        username NVARCHAR(100) NOT NULL,
+        email NVARCHAR(150) NOT NULL,
+        password NVARCHAR(255) NOT NULL,
+        role NVARCHAR(20) NOT NULL DEFAULT 'staff',
+        name NVARCHAR(150) NOT NULL,
+        department NVARCHAR(100),
+        telegram_chat_id NVARCHAR(50),
+        is_active BIT DEFAULT 1,
+        is_registered BIT DEFAULT 1,
         leave_total INT DEFAULT 14,
         leave_used INT DEFAULT 0,
         leave_pending INT DEFAULT 0,
         leave_remaining INT DEFAULT 14,
         hourly_total INT DEFAULT 16,
         hourly_used INT DEFAULT 0,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE
+        created_at DATETIME DEFAULT GETDATE(),
+        FOREIGN KEY (company_id) REFERENCES companies(id)
       )
     `);
 
     // İzin türleri tablosu
     await db.execute(`
-      CREATE TABLE IF NOT EXISTS leave_types (
-        id VARCHAR(50) PRIMARY KEY,
-        company_id VARCHAR(50) NOT NULL,
-        type_key VARCHAR(50) NOT NULL,
-        label VARCHAR(100) NOT NULL,
+      IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='leave_types' AND xtype='U')
+      CREATE TABLE leave_types (
+        id NVARCHAR(50) PRIMARY KEY,
+        company_id NVARCHAR(50) NOT NULL,
+        type_key NVARCHAR(50) NOT NULL,
+        label NVARCHAR(100) NOT NULL,
         max_days INT DEFAULT 0,
-        requires_approval BOOLEAN DEFAULT TRUE,
-        requires_document BOOLEAN DEFAULT FALSE,
-        is_active BOOLEAN DEFAULT TRUE,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE
+        requires_approval BIT DEFAULT 1,
+        requires_document BIT DEFAULT 0,
+        is_active BIT DEFAULT 1,
+        created_at DATETIME DEFAULT GETDATE(),
+        FOREIGN KEY (company_id) REFERENCES companies(id)
       )
     `);
 
     // İzin talepleri tablosu
     await db.execute(`
-      CREATE TABLE IF NOT EXISTS leaves (
-        id VARCHAR(50) PRIMARY KEY,
-        company_id VARCHAR(50) NOT NULL,
-        user_id VARCHAR(50) NOT NULL,
-        type VARCHAR(50) NOT NULL,
-        leave_type_key VARCHAR(50),
+      IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='leaves' AND xtype='U')
+      CREATE TABLE leaves (
+        id NVARCHAR(50) PRIMARY KEY,
+        company_id NVARCHAR(50) NOT NULL,
+        user_id NVARCHAR(50) NOT NULL,
+        type NVARCHAR(50) NOT NULL,
+        leave_type_key NVARCHAR(50),
         start_date DATE,
         end_date DATE,
-        start_time VARCHAR(10),
-        end_time VARCHAR(10),
+        start_time NVARCHAR(10),
+        end_time NVARCHAR(10),
         duration DECIMAL(10,2) NOT NULL,
-        description TEXT,
-        status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending',
-        approved_by VARCHAR(50),
+        description NVARCHAR(MAX),
+        status NVARCHAR(20) DEFAULT 'pending',
+        approved_by NVARCHAR(50),
         approved_at DATETIME,
-        rejection_reason TEXT,
-        document_url VARCHAR(255),
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE,
-        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        rejection_reason NVARCHAR(MAX),
+        document_url NVARCHAR(255),
+        created_at DATETIME DEFAULT GETDATE(),
+        FOREIGN KEY (company_id) REFERENCES companies(id),
+        FOREIGN KEY (user_id) REFERENCES users(id)
       )
     `);
 
-    // Sistem şirketi ekle
+    // Sistem şirketi ekle (yoksa)
     await db.execute(`
-      INSERT IGNORE INTO companies (id, code, name, admin_id) 
+      IF NOT EXISTS (SELECT id FROM companies WHERE id = 'system')
+      INSERT INTO companies (id, code, name, admin_id)
       VALUES ('system', 'SYS', 'Sistem Yönetimi', 'u_superadmin')
     `);
 
-    // Sistem yöneticisi ekle
+    // Sistem yöneticisi ekle (yoksa)
     await db.execute(`
-      INSERT IGNORE INTO users (id, company_id, username, email, password, role, name, department, is_active)
+      IF NOT EXISTS (SELECT id FROM users WHERE id = 'u_superadmin')
+      INSERT INTO users (id, company_id, username, email, password, role, name, department, is_active)
       VALUES (
-        'u_superadmin', 
-        'system', 
-        'admin', 
-        'admin@sistem.com', 
+        'u_superadmin',
+        'system',
+        'admin',
+        'admin@sistem.com',
         '$2a$10$WqB4Q6TqC7X0YpL2yI9W6u8aA5lJv5M7x9K3R/Fz1qN7x8A9P1O/a',
-        'superadmin', 
-        'Sistem Yöneticisi', 
-        'Genel Yönetim', 
-        TRUE
+        'superadmin',
+        'Sistem Yöneticisi',
+        'Genel Yönetim',
+        1
       )
     `);
 

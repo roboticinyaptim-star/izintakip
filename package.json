@@ -6,7 +6,10 @@
   "scripts": {
     "start": "node backend/server.js"
   },
-  "keywords": ["izin-takip", "leave-management"],
+  "keywords": [
+    "izin-takip",
+    "leave-management"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -15,6 +18,7 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
+    "mssql": "^12.7.0",
     "mysql2": "^3.24.3"
   }
 }

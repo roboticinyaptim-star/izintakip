@@ -60,7 +60,7 @@ router.patch('/:id/status', async (req, res) => {
     const { status, rejectionReason } = req.body;
     
     await db.execute(
-      'UPDATE leaves SET status = ?, rejection_reason = ?, approved_by = ?, approved_at = NOW() WHERE id = ? AND company_id = ?',
+      'UPDATE leaves SET status = ?, rejection_reason = ?, approved_by = ?, approved_at = GETDATE() WHERE id = ? AND company_id = ?',
       [status, rejectionReason || null, req.user.id, req.params.id, req.user.companyId]
     );
 

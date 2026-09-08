@@ -36,17 +36,17 @@ router.put('/settings', authenticateToken, requireRole(['admin', 'superadmin']),
 // Tüm şirketleri listele
 router.get('/', authenticateToken, requireRole(['superadmin']), async (req, res) => {
   try {
-    const [companies] = await db.execute('SELECT * FROM companies WHERE id != "system" ORDER BY created_at DESC');
+    const [companies] = await db.execute("SELECT * FROM companies WHERE id != 'system' ORDER BY created_at DESC");
     
     // Şirket istatistiklerini hesapla
     for (let c of companies) {
-      const [staff] = await db.execute('SELECT COUNT(*) as cnt FROM users WHERE company_id = ? AND role="staff"', [c.id]);
+      const [staff] = await db.execute("SELECT COUNT(*) as cnt FROM users WHERE company_id = ? AND role='staff'", [c.id]);
       const [leaves] = await db.execute('SELECT COUNT(*) as cnt FROM leaves WHERE company_id = ?', [c.id]);
-      const [pending] = await db.execute('SELECT COUNT(*) as cnt FROM leaves WHERE company_id = ? AND status="pending"', [c.id]);
+      const [pending] = await db.execute("SELECT COUNT(*) as cnt FROM leaves WHERE company_id = ? AND status='pending'", [c.id]);
       
-      c.staffCount = staff[0].cnt;
-      c.leaveCount = leaves[0].cnt;
-      c.pendingCount = pending[0].cnt;
+      c.staffCount = staff[0] ? staff[0].cnt : 0;
+      c.leaveCount = leaves[0] ? leaves[0].cnt : 0;
+      c.pendingCount = pending[0] ? pending[0].cnt : 0;
     }
     
     res.json(companies);

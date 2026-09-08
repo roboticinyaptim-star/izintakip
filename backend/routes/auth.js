@@ -80,7 +80,6 @@ router.post('/register', async (req, res) => {
 
     // Veritabanı işlemi başlat
     const conn = await db.getConnection();
-    await conn.beginTransaction();
 
     try {
       // Şirket kaydı oluştur
@@ -98,9 +97,9 @@ router.post('/register', async (req, res) => {
 
       // Varsayılan izin türleri
       const defaultTypes = [
-        [companyId, 'annual', 'Yıllık İzin', 14, true],
-        [companyId, 'excuse', 'Mazeret İzni', 2, true],
-        [companyId, 'sick', 'Hastalık İzni', 0, true]
+        [companyId, 'annual', 'Yıllık İzin', 14, 1],
+        [companyId, 'excuse', 'Mazeret İzni', 2, 1],
+        [companyId, 'sick', 'Hastalık İzni', 0, 1]
       ];
       
       for (const dt of defaultTypes) {
@@ -112,7 +111,6 @@ router.post('/register', async (req, res) => {
       }
 
       await conn.commit();
-      conn.release();
 
       // Token oluştur ve gönder
       const tokenPayload = {
@@ -132,7 +130,6 @@ router.post('/register', async (req, res) => {
 
     } catch (err) {
       await conn.rollback();
-      conn.release();
       throw err;
     }
 
