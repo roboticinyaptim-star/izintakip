@@ -34,7 +34,7 @@ async function getPool() {
   return pool;
 }
 
-// mysql2 uyumlu execute arayüzü: const [rows] = await db.execute(sql, params)
+// MSSQL execute arayüzü: const [rows] = await db.execute(sql, params)
 const db = {
   sql,
 
