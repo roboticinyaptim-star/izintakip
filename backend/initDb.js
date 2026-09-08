@@ -85,28 +85,44 @@ async function initDb() {
       )
     `);
 
-    // Sistem şirketi ekle (yoksa)
+    // Varsayılan ana şirket (yoksa)
     await db.execute(`
-      IF NOT EXISTS (SELECT id FROM companies WHERE id = 'system')
+      IF NOT EXISTS (SELECT id FROM companies WHERE id = 'c_main')
       INSERT INTO companies (id, code, name, admin_id)
-      VALUES ('system', 'SYS', 'Sistem Yönetimi', 'u_superadmin')
+      VALUES ('c_main', 'IZIN2026', 'Kurumsal İzin Takip', 'u_admin')
     `);
 
-    // Sistem yöneticisi ekle (yoksa)
+    // Varsayılan yönetici (admin / admin123) (yoksa)
     await db.execute(`
-      IF NOT EXISTS (SELECT id FROM users WHERE id = 'u_superadmin')
-      INSERT INTO users (id, company_id, username, email, password, role, name, department, is_active)
-      VALUES (
-        'u_superadmin',
-        'system',
-        'admin',
-        'admin@sistem.com',
-        '$2a$10$WqB4Q6TqC7X0YpL2yI9W6u8aA5lJv5M7x9K3R/Fz1qN7x8A9P1O/a',
-        'superadmin',
-        'Sistem Yöneticisi',
-        'Genel Yönetim',
-        1
+      IF NOT EXISTS (SELECT id FROM users WHERE username = 'admin')
+      INSERT INTO users (
+        id, company_id, username, email, password, role, name, department, is_active, is_registered,
+        leave_total, leave_used, leave_pending, leave_remaining, hourly_total, hourly_used
       )
+      VALUES (
+        'u_admin',
+        'c_main',
+        'admin',
+        'admin@kurum.com',
+        '$2b$10$8zfF5oVuEG57/XB7DBqL8.Zt8qZGl1Vn2ObFg2iz.7odXmRFd16Rm',
+        'admin',
+        'Sistem Yöneticisi',
+        'Yönetim',
+        1, 1, 20, 0, 0, 20, 16, 0
+      )
+    `);
+
+    // Standart izin türleri (yoksa)
+    await db.execute(`
+      IF NOT EXISTS (SELECT id FROM leave_types WHERE company_id = 'c_main')
+      BEGIN
+        INSERT INTO leave_types (id, company_id, type_key, label, max_days, requires_approval, requires_document, is_active)
+        VALUES 
+          ('lt_annual', 'c_main', 'annual', 'Yıllık İzin', 14, 1, 0, 1),
+          ('lt_excuse', 'c_main', 'excuse', 'Mazeret İzni', 3, 1, 0, 1),
+          ('lt_sick',   'c_main', 'sick',   'Hastalık İzni', 10, 1, 1, 1),
+          ('lt_hourly', 'c_main', 'hourly', 'Saatlik İzin', 0, 1, 0, 1);
+      END
     `);
 
     console.log('✅ Veritabanı tabloları ve başlangıç verileri hazır.');
