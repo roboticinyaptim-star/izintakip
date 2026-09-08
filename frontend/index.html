@@ -180,9 +180,9 @@
 
       <form id="staffLoginForm" novalidate>
         <div class="form-group">
-          <label class="form-label" for="staffEmail">E-posta Adresi</label>
-          <input class="form-input" type="email" id="staffEmail"
-            placeholder="personel@kurum.com" autocomplete="email" />
+          <label class="form-label" for="staffEmail">Kullanıcı Adı veya E-posta</label>
+          <input class="form-input" type="text" id="staffEmail"
+            placeholder="ornek@kurum.com veya kullanıcı adı" autocomplete="username" />
         </div>
 
         <div class="form-group">
@@ -385,7 +385,7 @@ document.getElementById('staffLoginForm').addEventListener('submit', async e => 
   const email = document.getElementById('staffEmail').value.trim().toLowerCase();
   const pwd   = document.getElementById('staffPassword').value;
   const rem   = document.getElementById('staffRemember').checked;
-  if (!email || !pwd) { showError('staffError','staffErrorMsg','Lütfen kurumsal e-posta adresinizi ve şifrenizi giriniz.'); return; }
+  if (!email || !pwd) { showError('staffError','staffErrorMsg','Lütfen e-posta veya kullanıcı adınızı ve şifrenizi giriniz.'); return; }
 
   setLoading('staffLoginBtn', true);
   try {
